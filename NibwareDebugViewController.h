@@ -13,6 +13,7 @@
     IBOutlet UITextView   *logBox;
     
     CGRect savedBounds;
+    float  zoomScale;
 }
 
 @property (retain) UITextView *logBox;

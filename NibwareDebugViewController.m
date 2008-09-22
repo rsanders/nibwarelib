@@ -82,6 +82,8 @@
     logBox.maximumZoomScale = 4.0;
     logBox.minimumZoomScale = 0.5;
     logBox.delegate = self;
+
+    zoomScale = 1.0;
     
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(logNotification:) name:NIBWARE_NOTIFICATION_LOG object:Nil];
@@ -90,6 +92,8 @@
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     savedBounds = logBox.frame;
+    logBox.font = [UIFont fontWithName:@"Courier" size:10.0];
+
     return logBox;
 }
 
@@ -100,11 +104,13 @@
         scale = 1.0;
         NSLog(@"scale near to zero, resetting to 1");
     }
-
+    zoomScale = scale;
+    
     view.transform = CGAffineTransformIdentity;
     view.frame = savedBounds;
-    float fontSize = round(scale * 10);
+    float fontSize = scale * 10;
     logBox.font = [UIFont fontWithName:@"Courier" size:fontSize];
+    NSLog(@"effective font size is %f", logBox.font.pointSize);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
