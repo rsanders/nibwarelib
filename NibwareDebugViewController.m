@@ -1,18 +1,18 @@
 //
-//  DebugViewController.m
+//  NibwareDebugViewController.m
 //  pingle
 //
 //  Created by Robert Sanders on 9/22/08.
 //  Copyright 2008 ViTrue, Inc.. All rights reserved.
 //
 
-#import "DebugViewController.h"
+#import "NibwareDebugViewController.h"
 
 #import "NibwareLog.h"
 
 #undef NSLog
 
-@implementation DebugViewController
+@implementation NibwareDebugViewController
 
 @synthesize logBox;
 
@@ -42,7 +42,7 @@
     bounds.size.height = 1;
     bounds.size.width = 1;
 
-    [logBox animated:NO scrollRectToVisible:bounds];
+    [logBox scrollRectToVisible:bounds animated:NO];
 }
 
 

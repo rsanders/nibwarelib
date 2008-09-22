@@ -1,5 +1,5 @@
 //
-//  DebugViewController.h
+//  NibwareDebugViewController.h
 //  pingle
 //
 //  Created by Robert Sanders on 9/22/08.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface DebugViewController : UIViewController {
+@interface NibwareDebugViewController : UIViewController {
     IBOutlet UITextView   *logBox;
 }
 
