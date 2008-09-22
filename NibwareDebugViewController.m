@@ -46,15 +46,27 @@
 }
 
 
+- (CGRect)getVisibleRectangle:(UIScrollView *) view {
+    CGPoint point = [view contentOffset];
+    CGRect rect;
+
+    rect.origin = point;
+    rect.size = view.bounds.size;
+    
+    return rect;
+}
+
 #pragma mark Event handling
 
 - (void)logNotification:(NSNotification *)notification {
     NSString *message = [[notification userInfo] objectForKey:@"message"];
     
     CGSize size = logBox.contentSize;
+    CGRect currentRect = [self getVisibleRectangle:logBox];
     [logBox setText:[NSString stringWithFormat:@"%@%@\n", logBox.text, message]];
 
-    [self repositionAnimatedFrom:[self bottomRectForSize:size]];
+    // [self repositionAnimatedFrom:[self bottomRectForSize:size]];
+    [self repositionAnimatedFrom:currentRect];    
 }
 
 #pragma mark Initialization
@@ -66,15 +78,43 @@
     logBox.editable = NO;
     logBox.text = @"";
     logBox.font = [UIFont fontWithName:@"Courier" size:10.0];
+    logBox.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+    logBox.maximumZoomScale = 4.0;
+    logBox.minimumZoomScale = 0.5;
+    logBox.delegate = self;
     
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(logNotification:) name:NIBWARE_NOTIFICATION_LOG object:Nil];
 
 }
 
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    savedBounds = logBox.frame;
+    return logBox;
+}
+
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(float)scale
+{
+    NSLog(@"debug view zoomed to scale %f", scale);
+    if (scale >= 0.9 && scale < 1.1) {
+        scale = 1.0;
+        NSLog(@"scale near to zero, resetting to 1");
+    }
+
+    view.transform = CGAffineTransformIdentity;
+    view.frame = savedBounds;
+    float fontSize = round(scale * 10);
+    logBox.font = [UIFont fontWithName:@"Courier" size:fontSize];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NWLog(@"debug view appeared");
+    NSLog(@"debug view appeared");
+    
+    if (! [logBox.text isEqualToString:@""]) {
+        NSLog(@"already initialized, not recreating full text");
+        return;
+    }
     
     NSMutableString *text = [[[NSMutableString alloc] init] autorelease];
     NSString *message;

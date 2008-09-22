@@ -9,8 +9,10 @@
 #import <UIKit/UIKit.h>
 
 
-@interface NibwareDebugViewController : UIViewController {
+@interface NibwareDebugViewController : UIViewController <UIScrollViewDelegate, UITextViewDelegate> {
     IBOutlet UITextView   *logBox;
+    
+    CGRect savedBounds;
 }
 
 @property (retain) UITextView *logBox;
