@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: suport URL remapping in webview (host -> host or host-> filesystem or filesystem -> host)
+desc: allow the remapping of any URL to any other URL...is this possible in webview?
+type: :feature
+component: Webview
+release: 
+reporter: Robert Sanders <rsanders+pingboard@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-09-23 22:22:38.673451 Z
+references: []
+
+id: fc30344fe04417e465e52ebca15b583f0d80a942
+log_events: 
+- - 2008-09-23 22:22:39.939175 Z
+  - Robert Sanders <rsanders+pingboard@gmail.com>
+  - created
+  - ""
