@@ -12,6 +12,8 @@
 
 #undef NSLog
 
+#define DEFAULT_FONT_SIZE  12.0
+
 @implementation NibwareDebugViewController
 
 @synthesize logBox;
@@ -61,7 +63,7 @@
 - (void)logNotification:(NSNotification *)notification {
     NSString *message = [[notification userInfo] objectForKey:@"message"];
     
-    CGSize size = logBox.contentSize;
+    // CGSize size = logBox.contentSize;
     CGRect currentRect = [self getVisibleRectangle:logBox];
     [logBox setText:[NSString stringWithFormat:@"%@%@\n", logBox.text, message]];
 
@@ -92,7 +94,7 @@
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     savedBounds = logBox.frame;
-    logBox.font = [UIFont fontWithName:@"Courier" size:10.0];
+    logBox.font = [UIFont fontWithName:@"Courier" size:DEFAULT_FONT_SIZE];
 
     return logBox;
 }
@@ -108,7 +110,7 @@
     
     view.transform = CGAffineTransformIdentity;
     view.frame = savedBounds;
-    float fontSize = scale * 10;
+    float fontSize = scale * DEFAULT_FONT_SIZE;
     logBox.font = [UIFont fontWithName:@"Courier" size:fontSize];
     NSLog(@"effective font size is %f", logBox.font.pointSize);
 }
@@ -124,11 +126,13 @@
     
     NSMutableString *text = [[[NSMutableString alloc] init] autorelease];
     NSString *message;
-    for (message in [[NibwareLog singleton] messages])
+    NSArray *messages = [[[NibwareLog singleton] messages] copy];
+    for (message in messages)
     {
         [text appendString:message];
         [text appendString:@"\n"];
     }
+    [messages release];
     [logBox setText:text];
     [self repositionToBottom];
 }
