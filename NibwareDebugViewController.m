@@ -18,21 +18,16 @@
 
 @synthesize logBox;
 
-- (void) repositionAnimatedFrom:(CGRect) rect {
+- (void) smoothScrollToBottom {
     NSRange range;
     range.location = [logBox.text length] - 1;
-    [logBox scrollRectToVisible:rect animated:NO];
+    range.length = 1;
     [logBox scrollRangeToVisible:range];
 }
 
-- (CGRect)bottomRectForSize:(CGSize) size {
-    CGRect bounds;
-    
-    bounds.origin.x = 0;
-    bounds.origin.y = size.height-1;
-    bounds.size.height = 1;
-    bounds.size.width = 1;
-    return bounds;
+- (void) repositionAnimatedFrom:(CGRect)rect {
+    logBox.bounds = rect;
+    [self smoothScrollToBottom];
 }
 
 - (void) repositionToBottom {
@@ -49,27 +44,27 @@
 
 
 - (CGRect)getVisibleRectangle:(UIScrollView *) view {
-    CGPoint point = [view contentOffset];
-    CGRect rect;
-
-    rect.origin = point;
-    rect.size = view.bounds.size;
-    
+    CGRect rect = view.bounds;
     return rect;
 }
 
 #pragma mark Event handling
 
-- (void)logNotification:(NSNotification *)notification {
+
+- (void)doLogNotification:(NSNotification *)notification {
     NSString *message = [[notification userInfo] objectForKey:@"message"];
     
-    // CGSize size = logBox.contentSize;
-    CGRect currentRect = [self getVisibleRectangle:logBox];
+    CGRect currentRect = logBox.bounds;
     [logBox setText:[NSString stringWithFormat:@"%@%@\n", logBox.text, message]];
-
-    // [self repositionAnimatedFrom:[self bottomRectForSize:size]];
-    [self repositionAnimatedFrom:currentRect];    
+    logBox.bounds = currentRect;
+    // [self repositionAnimatedFrom:currentRect];    
+    [self smoothScrollToBottom];
 }
+
+- (void)logNotification:(NSNotification *)notification {
+    [self performSelectorOnMainThread:@selector(doLogNotification:) withObject:notification waitUntilDone:NO];
+}
+    
 
 #pragma mark Initialization
 
@@ -86,10 +81,6 @@
     logBox.delegate = self;
 
     zoomScale = 1.0;
-    
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    [center addObserver:self selector:@selector(logNotification:) name:NIBWARE_NOTIFICATION_LOG object:Nil];
-
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
@@ -116,6 +107,8 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    static BOOL subscribed = NO;
+    
     [super viewDidAppear:animated];
     NSLog(@"debug view appeared");
     
@@ -134,7 +127,15 @@
     }
     [messages release];
     [logBox setText:text];
-    [self repositionToBottom];
+    
+    if (! subscribed)
+    {
+        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+        [center addObserver:self selector:@selector(logNotification:) name:NIBWARE_NOTIFICATION_LOG object:Nil];        
+        subscribed = YES;
+    }
+
+    [self repositionToBottom];    
 }
 
 #pragma mark Boilerplate view controller stuff
