@@ -13,7 +13,7 @@
 @implementation NibwareUrlUtils
 
 +(NSDictionary *) parseQueryString:(NSString *)queryString {
-    NSDictionary *dict = [[NSDictionary new] autorelease];
+    NSMutableDictionary *dict = [[NSMutableDictionary new] autorelease];
     if (queryString && [queryString length] > 0) {
         NSArray *pairs = [queryString componentsSeparatedByString:@"&"];
         NSString *pair;

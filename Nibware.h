@@ -11,4 +11,8 @@
 #import "NibwareUrlUtils.h"
 #import "NibwareStringUtils.h"
 #import "NibwareLog.h"
+#import "NibwarePrefs.h"
+#import "NibwareAlert.h"
+#import "NibwarePrefs.h"
+
 
