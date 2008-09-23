@@ -19,7 +19,7 @@
 - (void) setValueByParsedString:(NSString *)value forKey:(NSString *)key
 {
     id current = [self objectForKey:key];
-    NSString *clazzName = [current className];
+    NSString *clazzName = NSStringFromClass([current class]);
     NSLog(@"current value for %@ is class %@", key, [value class]);
     if ([clazzName isEqualToString:@"NSCFBoolean"] 
         || [value isEqualToString:@"t"]
