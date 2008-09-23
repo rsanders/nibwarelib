@@ -14,5 +14,6 @@
 #import "NibwarePrefs.h"
 #import "NibwareAlert.h"
 #import "NibwarePrefs.h"
+#import "NibwareWebView.h"
 
 
