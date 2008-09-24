@@ -7,37 +7,28 @@
 //
 
 #import "NibwareWebViewController.h"
+#import "Nibware.h"
 
 
 @implementation NibwareWebViewController
 
-/*
-// Override initWithNibName:bundle: to load the view using a nib file then perform additional customization that is not appropriate for viewDidLoad.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-        // Custom initialization
-    }
-    return self;
-}
-*/
+@synthesize loadJSLib, otherJSLibs, delegate;
 
-/*
-// Implement loadView to create a view hierarchy programmatically.
-- (void)loadView {
+- (void) init {
+    [super init];
+    passNext = NO;
+    loadJSLib = YES;
 }
-*/
 
-/*
-// Implement viewDidLoad to do additional setup after loading the view.
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [(UIWebView*)self.view setDelegate:self];
 }
-*/
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return YES;
 }
 
 
@@ -48,8 +39,85 @@
 
 
 - (void)dealloc {
+    otherJSLibs = Nil;
+    
     [super dealloc];
 }
 
+#pragma mark HTML Munging
+
+- (void)insertJavascriptByURL:(NSURL *)url {
+}
+
+- (void)insertJavascriptString:(NSString *)script {
+}
+
+
+#pragma mark UIWebViewDelegate
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request 
+ navigationType:(UIWebViewNavigationType)navigationType 
+{
+    NSLog(@"wVsSLWR, req=%@", request);
+    // request.URL = [NSURL URLWithString:@"http://robertsanders.name/dev/pingle/about2.html"];
+
+    //if ([[[request URL] path] isEqualToString:@"/dev/pingle/about2.html"]) {
+
+    if (passNext || true) {
+        passNext = NO;
+        return YES;
+    } 
+
+    passNext = YES;
+    [webView performSelectorOnMainThread:@selector(loadRequest:)
+                              withObject:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://robertsanders.name/dev/pingle/about2.html"]]
+                          waitUntilDone:NO];
+    
+    return NO;
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    NSLog(@"wVDSL");
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    NSLog(@"wVDFL");
+    if (loadJSLib || true) {
+        NSLog(@"loading JSlib");
+        
+        NSString *jspath = [NSString stringWithFormat:@"file://%@",
+                            [[NSBundle mainBundle] pathForResource:@"rew" ofType:@"js"]];
+        jspath = @"http://robertsanders.name/dev/pingle/rew.js";
+        NSLog(@"jspath = %@", jspath);
+
+        // [webView stringByEvaluatingJavaScriptFromString:@"jquery('#outbox').text('first pass');"];
+        
+        NSString *jsstring = [NSString stringWithFormat:
+@""
+"alert('no runny');"                              
+"(function() {"
+"  var head = document.getElementsByTagName('head')[0];"
+"  var script = document.createElement('script');"
+"  script.setAttribute('type', 'text/javascript');"
+"  script.setAttribute('src', '%@');"
+"  head.appendChild(script);"
+"})();", jspath];
+        
+        // jsstring = @"jQuery('#outbox').text('foobar');";
+        
+        NSLog(@"inserting JS: %@", jsstring);
+        
+//        [webView performSelectorOnMainThread:@selector(stringByEvaluatingJavaScriptFromString:) withObject:jsstring
+//                               waitUntilDone:NO];
+        [webView stringByEvaluatingJavaScriptFromString:jsstring];
+    }
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    NSLog(@"wVdFLWE: %@", error);
+}
+
+#pragma mark NibwareWebViewDelegate
 
 @end
+

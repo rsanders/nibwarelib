@@ -8,9 +8,28 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol NibwareWebViewDelegate;
 
 @interface NibwareWebViewController : UIViewController <UIWebViewDelegate> {
-
+    BOOL loadJSLib;
+    NSArray *otherJSLibs;
+    
+    // remapping
+    BOOL passNext;
+    
+    
+    id<NibwareWebViewDelegate>   delegate;
+    
 }
+
+@property (assign) BOOL                         loadJSLib;
+@property (retain) NSArray*                     otherJSLibs;
+@property (assign) id<NibwareWebViewDelegate>   delegate;
+
+@end
+
+
+@protocol NibwareWebViewDelegate <UIWebViewDelegate>
+
 
 @end
