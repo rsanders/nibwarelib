@@ -44,14 +44,58 @@
     [super dealloc];
 }
 
+- (NibwareWebView *)webView {
+    return (NibwareWebView*)self.view;
+}
+
 #pragma mark HTML Munging
 
-- (void)insertJavascriptByURL:(NSURL *)url {
+- (void)insertJavascriptByURL:(NSURL *)url asReference:(BOOL)useRef {
+    NSString *jsstring;
+    if ([url isFileURL] || useRef) {
+        jsstring = [NSString stringWithContentsOfURL:url];
+    } else {
+        jsstring = [NSString stringWithFormat:
+                          @""
+                          "alert('no runny');"                              
+                          "(function() {"
+                          "  var head = document.getElementsByTagName('head')[0];"
+                          "  var script = document.createElement('script');"
+                          "  script.setAttribute('type', 'text/javascript');"
+                          "  script.setAttribute('src', '%@');"
+                          "  head.appendChild(script);"
+                          "})();", [url absoluteString]];
+    }
+    
+    NSLog(@"inserting JS from URL %@: %@", url, jsstring);
+    [[self webView] stringByEvaluatingJavaScriptFromString:jsstring];
+}
+
+- (void)insertJavascriptFile:(NSString *)path {
+    [self insertJavascriptByURL:[NSURL fileURLWithPath:path] asReference:NO];
 }
 
 - (void)insertJavascriptString:(NSString *)script {
+    NSLog(@"inserting JS: %@", script);
+    [[self webView] stringByEvaluatingJavaScriptFromString:script];
 }
 
+#pragma mark JS Bridge
+
+- (id)handleJSBridge:(UIWebView *)webView request:(NSURLRequest *)request 
+      navigationType:(UIWebViewNavigationType)navigationType 
+{
+    NSLog(@"doing js bridge for %@, navtype=%d", request, navigationType);
+    
+    NSString *jsstring = [NSString stringWithFormat:
+        @"bridgecomplete('%@', '%@');",
+        @"id not set", [request.URL path]];
+    
+//    [webView performSelectorOnMainThread:@selector(stringByEvaluatingJavaScriptFromString:)
+//                                              withObject:jsstring waitUntilDone:NO];
+    [webView stringByEvaluatingJavaScriptFromString:jsstring];
+    return Nil;
+}
 
 #pragma mark UIWebViewDelegate
 
@@ -59,21 +103,35 @@
  navigationType:(UIWebViewNavigationType)navigationType 
 {
     NSLog(@"wVsSLWR, req=%@", request);
-    // request.URL = [NSURL URLWithString:@"http://robertsanders.name/dev/pingle/about2.html"];
 
-    //if ([[[request URL] path] isEqualToString:@"/dev/pingle/about2.html"]) {
-
-    if (passNext || true) {
+    // handle special internal URLs here
+    
+    if ([[request.URL scheme] isEqualToString:@"nibwarejsbridge"]
+        || [[request.URL host] isEqualToString:@"nibwarejsbridge"]) {
+        [self handleJSBridge:webView request:request navigationType:navigationType];
+        
+        return NO;
+    }
+    
+    // if we're remapping, we'll want the remapped URL to pass through unmolested
+    if (passNext) {
         passNext = NO;
         return YES;
     } 
 
-    passNext = YES;
-    [webView performSelectorOnMainThread:@selector(loadRequest:)
-                              withObject:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://robertsanders.name/dev/pingle/about2.html"]]
+    // TODO: use remapping delegate
+    NSURL *remapping = Nil;
+    
+    if (remapping != Nil) {
+        passNext = YES;
+        [webView performSelectorOnMainThread:@selector(loadRequest:)
+                              withObject:[NSURLRequest requestWithURL:remapping]
                           waitUntilDone:NO];
     
-    return NO;
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
@@ -85,31 +143,9 @@
     if (loadJSLib || true) {
         NSLog(@"loading JSlib");
         
-        NSString *jspath = [NSString stringWithFormat:@"file://%@",
-                            [[NSBundle mainBundle] pathForResource:@"rew" ofType:@"js"]];
-        jspath = @"http://robertsanders.name/dev/pingle/rew.js";
-        NSLog(@"jspath = %@", jspath);
-
-        // [webView stringByEvaluatingJavaScriptFromString:@"jquery('#outbox').text('first pass');"];
+        NSString *jspath = [[NSBundle mainBundle] pathForResource:@"rew" ofType:@"js" inDirectory:@"web"];
         
-        NSString *jsstring = [NSString stringWithFormat:
-@""
-"alert('no runny');"                              
-"(function() {"
-"  var head = document.getElementsByTagName('head')[0];"
-"  var script = document.createElement('script');"
-"  script.setAttribute('type', 'text/javascript');"
-"  script.setAttribute('src', '%@');"
-"  head.appendChild(script);"
-"})();", jspath];
-        
-        // jsstring = @"jQuery('#outbox').text('foobar');";
-        
-        NSLog(@"inserting JS: %@", jsstring);
-        
-//        [webView performSelectorOnMainThread:@selector(stringByEvaluatingJavaScriptFromString:) withObject:jsstring
-//                               waitUntilDone:NO];
-        [webView stringByEvaluatingJavaScriptFromString:jsstring];
+        [self insertJavascriptByURL:[NSURL fileURLWithPath:jspath] asReference:NO];
     }
 }
 
