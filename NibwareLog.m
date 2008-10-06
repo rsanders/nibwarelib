@@ -47,7 +47,10 @@
 #pragma mark Useful Methods
 
 - (void) log:(NSString *)message {
-    [[self messages] addObject:message];
+    @synchronized (messages)
+    {
+        [[self messages] addObject:message];
+    }
     NSLog(message);
     
     if (doNotify) {

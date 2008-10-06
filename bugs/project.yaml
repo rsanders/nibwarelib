@@ -1,0 +1,22 @@
+--- !ditz.rubyforge.org,2008-03-06/project 
+name: nibwarelib
+version: "0.4"
+components: 
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: nibwarelib
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: Webview
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: Log
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: Prefs
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: MIME
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: URL
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: StringUtils
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: DebugView
+releases: []
+
