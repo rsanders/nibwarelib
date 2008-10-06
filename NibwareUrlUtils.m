@@ -13,7 +13,7 @@
 @implementation NibwareUrlUtils
 
 +(NSDictionary *) parseQueryString:(NSString *)queryString {
-    NSDictionary *dict = [[NSDictionary new] autorelease];
+    NSMutableDictionary *dict = [[NSMutableDictionary new] autorelease];
     if (queryString && [queryString length] > 0) {
         NSArray *pairs = [queryString componentsSeparatedByString:@"&"];
         NSString *pair;
@@ -21,7 +21,8 @@
             NSArray *keyval = [pair componentsSeparatedByString:@"="];
             NSString *key = [keyval objectAtIndex:0];
             NSString *val = [keyval objectAtIndex:1];
-
+            key = [key stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            val = [val stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             [dict setValue:val forKey:key];
         }
     }
