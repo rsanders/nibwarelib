@@ -88,3 +88,8 @@ void NWLog(NSString *format, ...)
     [[NibwareLog singleton] logWithFormat:format arguments:ap];
     va_end(ap);
 }
+
+void NullLog(NSString *format, ...)
+{
+    // do nothing
+}
