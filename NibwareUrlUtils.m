@@ -12,6 +12,19 @@
 
 @implementation NibwareUrlUtils
 
++(NSString *) urlencode:(NSString *)string
+{
+   return [string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; 
+}
+
++(NSString *) urldecode:(NSString *)string
+{
+    string = [string stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+    return [string stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+
+
+
 +(NSDictionary *) parseQueryString:(NSString *)queryString {
     NSMutableDictionary *dict = [[NSMutableDictionary new] autorelease];
     if (queryString && [queryString length] > 0) {
@@ -21,8 +34,8 @@
             NSArray *keyval = [pair componentsSeparatedByString:@"="];
             NSString *key = [keyval objectAtIndex:0];
             NSString *val = [keyval objectAtIndex:1];
-            key = [key stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            val = [val stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            key = [self urldecode:key];
+            val = [self urldecode:val];
             [dict setValue:val forKey:key];
         }
     }
