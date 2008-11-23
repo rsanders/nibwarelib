@@ -12,6 +12,18 @@
 
 @implementation NibwareUrlUtils
 
++(NSString *) urlencode:(NSString *)string
+{
+    NSString *newstring = (NSString *) 
+        CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, 
+                                                (CFStringRef) string, 
+                                                NULL,       // those to leave unescaped
+                                                CFSTR("?=&+\" "),  // legal URL chars to escape
+                                                kCFStringEncodingUTF8);
+    
+    return newstring;
+}
+
 +(NSDictionary *) parseQueryString:(NSString *)queryString {
     NSMutableDictionary *dict = [[NSMutableDictionary new] autorelease];
     if (queryString && [queryString length] > 0) {
@@ -36,8 +48,8 @@
     
     NSString *sep = @"";
     while ((key = [enumerator nextObject])) {
-        NSString *escapedKey = [key stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSString *escapedValue = [[dict valueForKey:key] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *escapedKey = [self urlencode:key];
+        NSString *escapedValue = [self urlencode:[dict valueForKey:key]];
         
         [string appendString:[NSString stringWithFormat:@"%@%@=%@", 
                               sep, escapedKey, escapedValue]];
