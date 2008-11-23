@@ -23,7 +23,6 @@
     
     return newstring;
 }
-}
 
 +(NSString *) urldecode:(NSString *)string
 {
