@@ -1,0 +1,24 @@
+http://www.linuxdevices.com/news/NS9788617297.html
+Boa - http://www.linuxjournal.com/article/4773
+CSE - C++ servlets - http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.58.1493
+http://gnunet.org/libmicrohttpd/
+http://www.appwebserver.org/products/appWeb/embedded-web-server.html
+http://www.goahead.com/products/webserver/licensing.aspx
+http://www.boa.org/documentation/
+
+http://en.wikipedia.org/wiki/Comparison_of_lightweight_web_servers
+
+Plus Google's Objective-C one
+
+http://shttpd.sourceforge.net/
+
+http://www.hughes.com.au/products/libhttpd/
+
+https://libre.adacore.com/aws/main.html
+
+http://0w.ru/httpd/index-en.html
+
+http://dclib.sourceforge.net/
+
+http://swill.sourceforge.net/
+
