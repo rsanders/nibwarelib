@@ -11,6 +11,11 @@
 
 }
 
+
++ (NSString *) urlencode:(NSString *)string;
+
++ (NSString *) urldecode:(NSString *)string;
+
 + (NSDictionary *) parseQueryString:(NSString *)queryString;
 + (NSString *) dictToQueryString:(NSDictionary *)dict;
 

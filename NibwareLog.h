@@ -29,6 +29,7 @@
 @end
 
 void NWLog(NSString *format, ...);
+void NullLog(NSString *format, ...);
 
 #define NIBWARE_NOTIFICATION_LOG @"log_message"
 

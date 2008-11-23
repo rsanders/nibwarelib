@@ -23,6 +23,14 @@
     
     return newstring;
 }
+}
+
++(NSString *) urldecode:(NSString *)string
+{
+    string = [string stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+    return [string stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+
 
 +(NSDictionary *) parseQueryString:(NSString *)queryString {
     NSMutableDictionary *dict = [[NSMutableDictionary new] autorelease];
@@ -33,7 +41,8 @@
             NSArray *keyval = [pair componentsSeparatedByString:@"="];
             NSString *key = [keyval objectAtIndex:0];
             NSString *val = [keyval objectAtIndex:1];
-
+            key = [self urldecode:key];
+            val = [self urldecode:val];
             [dict setValue:val forKey:key];
         }
     }
