@@ -17,7 +17,7 @@
 - (void) init {
     [super init];
     passNext = NO;
-    loadJSLib = YES;
+    loadJSLib = NO;
 }
 
 - (void)viewDidLoad {
@@ -140,10 +140,10 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     NSLog(@"wVDFL");
-    if (loadJSLib || true) {
+    if (loadJSLib) {
         NSLog(@"loading JSlib");
         
-        NSString *jspath = [[NSBundle mainBundle] pathForResource:@"rew" ofType:@"js" inDirectory:@"web"];
+        NSString *jspath = [[NSBundle mainBundle] pathForResource:@"nibware" ofType:@"js" inDirectory:@"web"];
         
         [self insertJavascriptByURL:[NSURL fileURLWithPath:jspath] asReference:NO];
     }
