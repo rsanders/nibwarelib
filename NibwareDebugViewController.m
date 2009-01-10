@@ -72,6 +72,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     NSLog(@"loaded");
+    
     logBox.editable = NO;
     logBox.text = @"";
     logBox.font = [UIFont fontWithName:@"Courier" size:10.0];
@@ -116,6 +117,9 @@
         NSLog(@"already initialized, not recreating full text");
         return;
     }
+    
+    self.view.frame = self.view.superview.frame;
+    logBox.frame = self.view.frame;
     
     NSMutableString *text = [[[NSMutableString alloc] init] autorelease];
     NSString *message;
