@@ -18,12 +18,9 @@
 
 + (NSDictionary *) parseQueryString:(NSString *)queryString;
 + (NSString *) dictToQueryString:(NSDictionary *)dict;
++ (NSData *) dictToQueryData:(NSDictionary *)dict;
 
 + (void)setMIMEBody:(NSMutableURLRequest *)request withParts:(NSArray *)parts;
-
-// + (NSString *)createMIMEBody:(NSMutableURLRequest *)request bodies:(NSArray *)bodies
-//                       names:(NSString *)names types:(NSString *)types;
-
 
 @end
 

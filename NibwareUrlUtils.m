@@ -7,7 +7,7 @@
 //
 
 #import "NibwareUrlUtils.h"
-
+#import "NibwareFileManager.h"
 #import "NibwareMIMEPart.h"
 
 @implementation NibwareUrlUtils
@@ -49,23 +49,63 @@
     return dict;
 }
 
-+ (NSString *) dictToQueryString:(NSDictionary *)dict {
++ (NSData *) dictToQueryData:(NSDictionary *)dict {
     NSEnumerator *enumerator = [dict keyEnumerator];
     id key;
-    NSMutableString *string = [NSMutableString stringWithString:@""];
+    
+    NSString *path = [[NibwareFileManager singleton] makeTempFileName];
+    [[NibwareFileManager singleton] registerApplicationScopeFile:path];
+    
+    if (![[NSFileManager defaultManager] createFileAtPath:path
+                                            contents:[NSData data]
+                                               attributes:nil])
+    {
+        NSLog(@"could not create temp file");
+        return nil;
+    }
+
+    NSFileHandle *file = [[NSFileHandle fileHandleForUpdatingAtPath:path] retain];
+    if (!file) {
+        NSLog(@"dictToQueryData could not open file %@", path);
+        return nil;
+    }
+    [file truncateFileAtOffset:0];
     
     NSString *sep = @"";
     while ((key = [enumerator nextObject])) {
+        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
         NSString *escapedKey = [self urlencode:key];
-        NSString *escapedValue = [self urlencode:[dict valueForKey:key]];
+        [file writeData:[[NSString stringWithFormat:@"%@%@=", 
+                          sep, escapedKey] dataUsingEncoding:NSUTF8StringEncoding]];
         
-        [string appendString:[NSString stringWithFormat:@"%@%@=%@", 
-                              sep, escapedKey, escapedValue]];
+        id value = [dict valueForKey:key];
+        if ([value isKindOfClass:[NSData class]]) {
+            [file writeData:(NSData *)value];
+        } else if ([value isKindOfClass:[NSString class]]) {
+            NSString *escapedValue = [self urlencode:(NSString *)value];
+            [file writeData:[escapedValue dataUsingEncoding:NSUTF8StringEncoding]];
+        } else {
+            [file writeData:[@"unknown" dataUsingEncoding:NSUTF8StringEncoding]];
+        }
         
+        [pool release];
         sep = @"&";
     }
-    
-    return string;
+
+    [file closeFile];
+    [file release];
+    NSUInteger options = NSMappedRead;
+    NSError *error = nil;
+    NSData *data = [NSData dataWithContentsOfFile:path options:options error:&error];
+    if (! data || error) {
+        NSLog(@"could not map file %@: %@", path, error);
+    }
+    return data;
+}
+
++ (NSString *) dictToQueryString:(NSDictionary *)dict {
+    return [[NSString alloc] initWithData:[NibwareUrlUtils dictToQueryData:dict]
+                                 encoding:NSUTF8StringEncoding];
 }
 
 + (void)setMIMEBody:(NSMutableURLRequest *)request withParts:(NSArray *)parts {
