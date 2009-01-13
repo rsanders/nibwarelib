@@ -71,7 +71,7 @@
 // Implement viewDidLoad to do additional setup after loading the view.
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"loaded");
+    NSLog(@"nibware debug view loaded");
     
     logBox.editable = NO;
     logBox.text = @"";
@@ -113,6 +113,13 @@
     [super viewDidAppear:animated];
     NSLog(@"debug view appeared");
     
+    if (! subscribed)
+    {
+        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+        [center addObserver:self selector:@selector(logNotification:) name:NIBWARE_NOTIFICATION_LOG object:Nil];        
+        subscribed = YES;
+    }
+
     if (! [logBox.text isEqualToString:@""]) {
         NSLog(@"already initialized, not recreating full text");
         return;
@@ -131,13 +138,7 @@
     }
     [messages release];
     [logBox setText:text];
-    
-    if (! subscribed)
-    {
-        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-        [center addObserver:self selector:@selector(logNotification:) name:NIBWARE_NOTIFICATION_LOG object:Nil];        
-        subscribed = YES;
-    }
+
 
     [self repositionToBottom];    
 }
