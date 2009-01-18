@@ -16,6 +16,7 @@
 #import "NibwarePrefs.h"
 #import "NibwareWebView.h"
 #import "NibwareFileManager.h"
+#import "NibwareNibUtils.h"
 
 
 
