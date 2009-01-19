@@ -41,11 +41,21 @@
     return res;
 }
 
+
+/*
+ * For some URL regexes, see:
+ *    http://www.truerwords.net/articles/ut/urlactivation.html
+ *    http://www.codinghorror.com/blog/archives/001181.html
+ *    http://josephscott.org/archives/2008/11/makeitlink-detecting-urls-in-text-and-making-them-links/
+ *
+ *
+ */
+
 - (NibwareHTMLifier*) initWithDelegate:(id<NibwareHTMLifierDelegate>)del
 {
     self = [super init];
     self.delegate = del;
-    self.urlRegex = @"\\bhttp://[A-Za-z0-9\\+\\&\\@\\#\\/\\%\\?\\=\\~\\_\\(\\)\\|\\!\\:\\,\\.\\;\\-]*[\\-A-Za-z0-9\\+\\&\\@\\#\\/\\%\\=\\~\\_\\|]";
+    self.urlRegex = @"\\b(http|https|ftp)://[A-Za-z0-9\\+\\&\\@\\#\\/\\%\\?\\=\\~\\_\\(\\)\\|\\!\\:\\,\\.\\;\\-]*[\\-A-Za-z0-9\\+\\&\\@\\#\\/\\%\\=\\~\\_\\|]";
     return self;
 }
 
