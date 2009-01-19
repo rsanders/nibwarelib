@@ -57,7 +57,9 @@
 
 - (BOOL) process:(NSError **)errptr
 {
-    // - (NSRange)rangeOfRegex:(NSString *)regex options:(RKLRegexOptions)options inRange:(NSRange)range capture:(NSInteger)capture error:(NSError **)error;
+    if (!source || ! source.length) {
+        return NO;
+    }
     NSRange currentRange = NSMakeRange(0, source.length);
     BOOL done = NO;
     while (!done)
