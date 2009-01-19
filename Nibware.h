@@ -18,3 +18,5 @@
 #import "NibwareFileManager.h"
 #import "NibwareNibUtils.h"
 #import "NibwareHTMLifier.h"
+#import "NSDate+Nibware.h"
+
