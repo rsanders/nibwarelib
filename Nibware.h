@@ -17,6 +17,4 @@
 #import "NibwareWebView.h"
 #import "NibwareFileManager.h"
 #import "NibwareNibUtils.h"
-
-
-
+#import "NibwareHTMLifier.h"
