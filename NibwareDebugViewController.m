@@ -73,6 +73,9 @@
     [super viewDidLoad];
     NSLog(@"nibware debug view loaded");
     
+    self.view.autoresizesSubviews = YES;
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    
     logBox.editable = NO;
     logBox.text = @"";
     logBox.font = [UIFont fontWithName:@"Courier" size:10.0];
@@ -80,7 +83,6 @@
     logBox.maximumZoomScale = 4.0;
     logBox.minimumZoomScale = 0.5;
     logBox.delegate = self;
-
     zoomScale = 1.0;
 }
 
@@ -152,9 +154,29 @@
     return YES;
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    
+    CGRect bounds = self.view.bounds;
+    NSLog(@"NDVC: didRotate, laying out...new bounds are %f, %f, %f, %f",
+          bounds.origin.x, bounds.origin.y,
+          bounds.size.width, bounds.size.height);
+    bounds = [[self.view superview] bounds];
+    NSLog(@"NDVC: ...superview bounds are %f, %f, %f, %f",
+          bounds.origin.x, bounds.origin.y,
+          bounds.size.width, bounds.size.height);
+    self.view.frame = CGRectMake(0, 0, bounds.size.width, bounds.size.height);
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+}
+
 - (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
+    // [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
     // Release anything that's not essential, such as cached data
+    
+    [logBox setText:@""];
+    NSLog(@"NibwareDebugViewController: Cleared for memory warning");
 }
 
 

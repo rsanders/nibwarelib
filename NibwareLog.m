@@ -33,6 +33,11 @@
 
 - (NibwareLog *) init {
     [super init];
+    
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self selector:@selector(lowmemNotification:) 
+                   name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+    
     self.messages = [[NSMutableArray alloc] init];
     self.doNotify = YES;
     
@@ -41,7 +46,18 @@
 
 - (void) dealloc {
     self.messages = Nil;
+
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    [center removeObserver:self];
+    
     [super dealloc];
+}
+
+#pragma mark maintenance
+
+- (void) lowmemNotification:(NSNotification*)notification
+{
+    [self.messages removeAllObjects];
 }
 
 #pragma mark Useful Methods
