@@ -90,7 +90,7 @@
 {
     NibwareTableSection *section = nil;
     for (section in self.sections) {
-        if ([section.sectionName isEqualTo:name]) {
+        if ([section.sectionName isEqualToString:name]) {
             return section;
         }
     }
