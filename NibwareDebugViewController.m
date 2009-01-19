@@ -75,7 +75,8 @@
     
     self.view.autoresizesSubviews = YES;
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-    
+    self.view.superview.autoresizesSubviews = YES;
+
     logBox.editable = NO;
     logBox.text = @"";
     logBox.font = [UIFont fontWithName:@"Courier" size:10.0];
@@ -175,7 +176,7 @@
     // [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
     // Release anything that's not essential, such as cached data
     
-    [logBox setText:@""];
+    [logBox performSelectorOnMainThread:@selector(setText:) withObject:@"" waitUntilDone:NO];
     NSLog(@"NibwareDebugViewController: Cleared for memory warning");
 }
 
