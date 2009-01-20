@@ -36,11 +36,19 @@
 @property (readonly) NSMutableArray*              sections;
 
 - (NibwareTableSectionManager*) initWithSectionFunction:(id<NibwareSectionFunction>)function;
+- (void) reset;
 - (void) sectionalize:(NSArray*)items;
 
 - (NSInteger) sectionCount;
 - (NibwareTableSection*) sectionByIndex:(NSInteger)num;
 - (NibwareTableSection*) sectionByName:(NSString *)name;
+
+// uitableviewdatasource-like methods
 - (id) objectForIndexPath:(NSIndexPath*) path;
+- (NSIndexPath*) indexPathForObject:(id<NSObject>)object;
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
+- (NSString*)tableView:(UITableView*)table titleForHeaderInSection:(NSInteger)section;
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section;
 
 @end

@@ -111,6 +111,10 @@
     }
 }
 
+- (void) reset {
+    [self.sections removeAllObjects];
+}
+
 - (NSInteger) sectionCount {
     return fmax([sections count], 1);
 }
@@ -127,10 +131,7 @@
     return [self getSection:name create:NO];
 }
 
-- (id) objectForIndexPath:(NSIndexPath*) path {
-    NibwareTableSection *section = [self sectionByIndex:path.section];
-    return [section objectAtIndex:path.row];
-}
+
 
 - (void) dealloc
 {
@@ -139,5 +140,41 @@
     [sections release];
     [super dealloc];
 }
+
+#pragma mark UITableViewDataSource-ish items
+
+- (id) objectForIndexPath:(NSIndexPath*) path {
+    NibwareTableSection *section = [self sectionByIndex:path.section];
+    return [section objectAtIndex:path.row];
+}
+
+- (NSIndexPath*) indexPathForObject:(id<NSObject>)object {
+    for (NSUInteger section = 0; section < sections.count; section++) {
+        NSUInteger index = [[(NibwareTableSection*)[sections objectAtIndex:section] items] indexOfObject:object];
+        if (index != NSNotFound) {
+            return [NSIndexPath indexPathForRow:index inSection:section];
+        }
+    }
+    
+    return nil;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return fmax([[self sections] count],1);
+}
+
+- (NSString*)tableView:(UITableView*)table titleForHeaderInSection:(NSInteger)section
+{
+    NSString *secName = [[self sectionByIndex:section] sectionName];
+    if (!secName) secName = @"All";
+    return secName;
+}
+
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section 
+{ 
+    return [[[self sectionByIndex:section] items] count];
+} 
+
 
 @end
