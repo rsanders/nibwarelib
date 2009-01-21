@@ -68,7 +68,7 @@
 {
     self = [super init];
     sections = [[NSMutableArray alloc] init];
-    defaultSection = [[NibwareTableSection alloc] initWithSectionName:@"All"];
+    defaultSection = [[NibwareTableSection alloc] initWithSectionName:@""];
     return self;
 }
 
@@ -167,7 +167,7 @@
 - (NSString*)tableView:(UITableView*)table titleForHeaderInSection:(NSInteger)section
 {
     NSString *secName = [[self sectionByIndex:section] sectionName];
-    if (!secName) secName = @"All";
+    if (!secName) secName = @"";
     return secName;
 }
 
