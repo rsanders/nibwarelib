@@ -12,7 +12,7 @@
 @implementation NibwareNibUtils
 
 
-+ (UITableViewCell*) createNewHistoryCell:(NSString*)cellid fromNib:(NSString *)nibName 
++ (UITableViewCell*) loadReusableCell:(NSString*)cellid fromNib:(NSString *)nibName 
 { 
     NSArray* nibContents = [[NSBundle mainBundle] 
                             loadNibNamed:nibName owner:self options:nil]; 
@@ -29,6 +29,20 @@
         } 
     } 
     return newcell; 
+}
+
++ (UITableViewCell*) loadNewCellfromNib:(NSString *)nibName 
+{ 
+    NSArray* nibContents = [[NSBundle mainBundle] 
+                            loadNibNamed:nibName owner:self options:nil]; 
+    NSEnumerator *nibEnumerator = [nibContents objectEnumerator]; 
+    NSObject* nibItem = nil; 
+    while ( (nibItem = [nibEnumerator nextObject]) != nil) { 
+        if ( [nibItem isKindOfClass:[UITableViewCell class]]) { 
+            return (UITableViewCell*) nibItem;
+        } 
+    } 
+    return nil; 
 } 
 
 @end

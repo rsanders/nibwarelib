@@ -13,6 +13,7 @@
 
 }
 
-+ (UITableViewCell*) createNewHistoryCell:(NSString*)cellid fromNib:(NSString *)nibName;
++ (UITableViewCell*) loadReusableCell:(NSString*)cellid fromNib:(NSString *)nibName;
++ (UITableViewCell*) loadNewCellfromNib:(NSString *)nibName;
 
 @end
