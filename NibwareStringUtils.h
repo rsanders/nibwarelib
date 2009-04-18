@@ -15,4 +15,7 @@
 
 + (BOOL) stringContains:(NSString *)string substring:(NSString *)substring;
 
++ (NSString *) friendlyDataSize:(NSInteger)length decimalPlaces:(int)places;
++ (NSString *) friendlyDurationInSeconds:(NSInteger)seconds;
+
 @end

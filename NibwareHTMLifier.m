@@ -62,7 +62,7 @@
 - (void) startString:(NSString *)string
 {
     self.source = string;
-    self.destination = [[NSMutableString alloc] init];
+    self.destination = [[[NSMutableString alloc] init] autorelease];
 }
 
 - (BOOL) process:(NSError **)errptr
@@ -113,6 +113,8 @@
 - (void) dealloc
 {
     self.delegate = nil;
+    self.destination = nil;
+    self.source = nil;
     [super dealloc];
 }
 
