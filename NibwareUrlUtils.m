@@ -49,25 +49,41 @@
     return dict;
 }
 
-+ (NSData *) dictToQueryData:(NSDictionary *)dict {
-    NSEnumerator *enumerator = [dict keyEnumerator];
-    id key;
-    
++ (NSData*) dictToQueryData:(NSDictionary *)dict
+{
     NSString *path = [[NibwareFileManager singleton] makeTempFileName];
     [[NibwareFileManager singleton] registerApplicationScopeFile:path];
     
+    NSInteger size = [self dictToQueryFile:dict path:path];
+    if (size == -1)
+        return nil;
+
+    NSUInteger options = NSMappedRead;
+    NSError *error = nil;
+    NSData *data = [NSData dataWithContentsOfFile:path options:options error:&error];
+    if (! data || error) {
+        NSLog(@"could not map file %@: %@", path, error);
+    }
+
+    return data;
+}
+
++ (NSInteger) dictToQueryFile:(NSDictionary *)dict path:(NSString*)path {
+    NSEnumerator *enumerator = [dict keyEnumerator];
+    id key;
+
     if (![[NSFileManager defaultManager] createFileAtPath:path
                                             contents:[NSData data]
                                                attributes:nil])
     {
         NSLog(@"could not create temp file");
-        return nil;
+        return -1;
     }
 
     NSFileHandle *file = [[NSFileHandle fileHandleForUpdatingAtPath:path] retain];
     if (!file) {
         NSLog(@"dictToQueryData could not open file %@", path);
-        return nil;
+        return -1;
     }
     [file truncateFileAtOffset:0];
     
@@ -94,13 +110,10 @@
 
     [file closeFile];
     [file release];
-    NSUInteger options = NSMappedRead;
-    NSError *error = nil;
-    NSData *data = [NSData dataWithContentsOfFile:path options:options error:&error];
-    if (! data || error) {
-        NSLog(@"could not map file %@: %@", path, error);
-    }
-    return data;
+
+    NSDictionary *att = [[NSFileManager defaultManager] fileAttributesAtPath:path traverseLink:YES];
+    NSNumber *size = [att objectForKey:NSFileSize];
+    return size ? [size unsignedLongLongValue] : -1;
 }
 
 + (NSString *) dictToQueryString:(NSDictionary *)dict {
