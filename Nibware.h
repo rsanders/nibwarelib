@@ -15,5 +15,8 @@
 #import "NibwareAlert.h"
 #import "NibwarePrefs.h"
 #import "NibwareWebView.h"
-
-
+#import "NibwareFileManager.h"
+#import "NibwareNibUtils.h"
+#import "NibwareHTMLifier.h"
+#import "NSDate+Nibware.h"
+#import "NibwareTableSectionManager.h"

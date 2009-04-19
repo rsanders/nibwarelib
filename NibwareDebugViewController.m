@@ -71,8 +71,12 @@
 // Implement viewDidLoad to do additional setup after loading the view.
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"loaded");
+    NSLog(@"nibware debug view loaded");
     
+    self.view.autoresizesSubviews = YES;
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    self.view.superview.autoresizesSubviews = YES;
+
     logBox.editable = NO;
     logBox.text = @"";
     logBox.font = [UIFont fontWithName:@"Courier" size:10.0];
@@ -80,7 +84,6 @@
     logBox.maximumZoomScale = 4.0;
     logBox.minimumZoomScale = 0.5;
     logBox.delegate = self;
-
     zoomScale = 1.0;
 }
 
@@ -113,6 +116,13 @@
     [super viewDidAppear:animated];
     NSLog(@"debug view appeared");
     
+    if (! subscribed)
+    {
+        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+        [center addObserver:self selector:@selector(logNotification:) name:NIBWARE_NOTIFICATION_LOG object:Nil];        
+        subscribed = YES;
+    }
+
     if (! [logBox.text isEqualToString:@""]) {
         NSLog(@"already initialized, not recreating full text");
         return;
@@ -131,13 +141,7 @@
     }
     [messages release];
     [logBox setText:text];
-    
-    if (! subscribed)
-    {
-        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-        [center addObserver:self selector:@selector(logNotification:) name:NIBWARE_NOTIFICATION_LOG object:Nil];        
-        subscribed = YES;
-    }
+
 
     [self repositionToBottom];    
 }
@@ -147,13 +151,33 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
     // return (interfaceOrientation == UIInterfaceOrientationPortrait);
-    NWLog(@"asked about rotating");
+    NWLog(@"debug view asked about rotating");
     return YES;
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    
+    CGRect bounds = self.view.bounds;
+    NSLog(@"NDVC: didRotate, laying out...new bounds are %f, %f, %f, %f",
+          bounds.origin.x, bounds.origin.y,
+          bounds.size.width, bounds.size.height);
+    bounds = [[self.view superview] bounds];
+    NSLog(@"NDVC: ...superview bounds are %f, %f, %f, %f",
+          bounds.origin.x, bounds.origin.y,
+          bounds.size.width, bounds.size.height);
+    self.view.frame = CGRectMake(0, 0, bounds.size.width, bounds.size.height);
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+}
+
 - (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
+    // [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
     // Release anything that's not essential, such as cached data
+    
+    [logBox performSelectorOnMainThread:@selector(setText:) withObject:@"" waitUntilDone:NO];
+    NSLog(@"NibwareDebugViewController: Cleared for memory warning");
 }
 
 
