@@ -1,7 +1,18 @@
 
-struct ImageQualityDataPoint {
+typedef struct  {
     int longEdgeSize;
     float quality;
     int size;
-};
+} CImageQualityDataPoint;
 
+@interface ImageQualityHelper {
+}
+
+#define LONG_EDGE_OF_CGSIZE(size) (fmax(size.width, size.height))
+
+// + (NSInteger) estimateBytesForImage:(UIImage *)image quality:(float)quality;
+// + (NSInteger) estimateBytes:(CGSize)size quality:(float)quality;
+
+
+
+@end

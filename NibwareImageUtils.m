@@ -1,11 +1,7 @@
 
-struct ImageQualityDataPoint {
-    int longEdgeSize;
-    float quality;
-    int size;
-}
+#import "NibwareImageUtils.h"
 
-static ImageQualityDataPoint ImageQualityDataPoints[] = {
+static CImageQualityDataPoint imageQualityDataPoints[] = {
     {1600,0.05,50687},
     {1600,0.10,52098},
     {1600,0.15,53765},
