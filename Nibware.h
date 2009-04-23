@@ -21,3 +21,4 @@
 #import "NSDate+Nibware.h"
 #import "NibwareTableSectionManager.h"
 #import "NibwareConcurrency.h"
+#import "NibwareImageUtils.h"

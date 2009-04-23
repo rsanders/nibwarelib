@@ -183,3 +183,52 @@ static CImageQualityDataPoint imageQualityDataPoints[] = {
     {160,0.95,9189},
     {160,1.00,29825},
 };
+
+
+@implementation NibwareImageUtils
+
++ (float) round_to_nearest_quality:(float) quality
+{
+    quality = fmin(1.0, fmax(quality, 0.05));
+    
+    return fmax(round(quality/0.05), 1) * 0.05;
+}
+
++ (NSInteger) estimateBytesForImage:(UIImage *)image quality:(float)quality
+{
+    return [NibwareImageUtils estimateBytes:image.size quality:quality];
+}
+
+#define CLOSER(desired, cur, contender) (fabs(contender-desired) <= fabs(cur-desired))
+
++ (CImageQualityDataPoint) findClosestPointForSize:(int)longEdge quality:(float)quality
+{
+    int maxI = sizeof(imageQualityDataPoints) / sizeof(CImageQualityDataPoint) - 1;
+    
+    CImageQualityDataPoint res = {0,0.0,0};
+    
+    for (int i = 0; i <= maxI; i++)
+    {
+        CImageQualityDataPoint tmp = imageQualityDataPoints[i];
+        if (CLOSER(longEdge, res.longEdgeSize, tmp.longEdgeSize)
+            && CLOSER(quality, res.quality, tmp.quality))
+        {
+            res = tmp;
+        }
+    }
+    
+    return res;
+}
+
++ (NSInteger) estimateBytes:(CGSize)size quality:(float)quality
+{
+    float longEdge = fmax(size.width, size.height);
+    CImageQualityDataPoint nearest = [NibwareImageUtils findClosestPointForSize:longEdge quality:quality];
+    
+    NSLog(@"estimateBytes: nearest for %f x %f @ %.0f is %f / %.0f",
+          (float) size.width, (float) size.height, (float) quality*100, (float) nearest.longEdgeSize, (float) nearest.quality*100);
+    
+    return nearest.size;
+}
+
+@end
