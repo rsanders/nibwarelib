@@ -20,4 +20,10 @@
 @property (retain) NSString *fileName;
 @property (retain) NSString *mimeType;
 
++ (NibwareMIMEPart*) mimePartFromFile:(NSString*)fileName mimeType:(NSString *)mimeType;
++ (NibwareMIMEPart*) mimePartFromData:(NSData*)data fileName:(NSString *)fileName mimeType:(NSString *)mimeType;
+
+- (NibwareMIMEPart*) initWithFile:(NSString*)fileName mimeType:(NSString *)mimeType;
+- (NibwareMIMEPart*) initWithData:(NSData*)data fileName:(NSString *)fileName mimeType:(NSString *)mimeType;
+
 @end

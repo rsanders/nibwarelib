@@ -149,18 +149,20 @@
             mimeType = @"application/octet-stream";
         }
         
-        if (i == 0) {
-            [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] 
-                              dataUsingEncoding:encoding]];
-        }
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] 
+                         dataUsingEncoding:encoding]];
         [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", name, filename] 
                           dataUsingEncoding:encoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", mimeType]
+        [body appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n", mimeType]
                           dataUsingEncoding:encoding]];
-        [body appendData:body];
-        [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] 
+        [body appendData:[[NSString stringWithFormat:@"Content-Length: %d\r\n", [[part body] length]]
                           dataUsingEncoding:encoding]];
+        [body appendData:[@"\r\n" dataUsingEncoding:encoding]];
+
+        [body appendData:part.body];
     }
+    [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] 
+                      dataUsingEncoding:encoding]];
 
 	[request setHTTPBody:body];
     [body release];
