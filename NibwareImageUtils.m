@@ -1,5 +1,6 @@
 
 #import "NibwareImageUtils.h"
+#import "NibwareReachability.h"
 
 static CImageQualityDataPoint imageQualityDataPoints[] = {
     {1600,0.05,50687},
@@ -229,6 +230,27 @@ static CImageQualityDataPoint imageQualityDataPoints[] = {
           (float) size.width, (float) size.height, (float) quality*100, (float) nearest.longEdgeSize, (float) nearest.quality*100);
     
     return nearest.size;
+}
+
++ (NSInteger) estimateUploadTime:(NSInteger)bytes
+{
+    // give it 10 seconds for goo measure
+    float seconds = 10;
+    int estSpeed;
+    NibwareNetworkStatus net = [[NibwareReachability sharedReachability] internetConnectionStatus];
+    switch (net) {
+        case ReachableViaWiFiNetwork:
+            estSpeed = 512000;
+            break;
+        case ReachableViaCarrierDataNetwork:
+        default:
+            estSpeed = 60000;
+    }
+    
+    // add some encoding overhead
+    seconds += ceil((bytes * 1.8 * 8.0) / estSpeed);
+
+    return seconds;
 }
 
 @end

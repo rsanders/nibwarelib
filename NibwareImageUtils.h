@@ -12,5 +12,6 @@ typedef struct  {
 
 + (NSInteger) estimateBytesForImage:(UIImage *)image quality:(float)quality;
 + (NSInteger) estimateBytes:(CGSize)size quality:(float)quality;
++ (NSInteger) estimateUploadTime:(NSInteger)bytes;
 
 @end
