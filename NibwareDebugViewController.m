@@ -128,8 +128,8 @@
         return;
     }
     
-    self.view.frame = self.view.superview.frame;
-    logBox.frame = self.view.frame;
+    self.view.frame = self.view.superview.bounds;
+    logBox.frame = self.view.bounds;
     
     NSMutableString *text = [[[NSMutableString alloc] init] autorelease];
     NSString *message;
