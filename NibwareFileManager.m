@@ -99,4 +99,43 @@ void NibwareFileManagerAtexit()
     return file;
 }
 
+
+#define ADD_MAP_ENTRY(a,b)   do { id key = (a), value = (b); \
+                                  if (toFlag) { id tmp = key; key = value; value = tmp; } \
+                                  [dict setObject:value forKey:key]; } while(0)
+
+- (NSDictionary*) getRelativeMap:(BOOL) toFlag
+{
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    // ADD_MAP_ENTRY(@"%%DOCUMENTS%%", documentsDirectory);
+    ADD_MAP_ENTRY(@"%%NSHOMEDIR%%", NSHomeDirectory());
+    return dict;
+}
+
+- (NSString *) convertPath:(NSString *)path withDict:(NSDictionary *)dict
+{
+    for (NSString *fromString in dict) {
+        if ([path hasPrefix:fromString]) {
+            return [NSString stringWithFormat:@"%@%@",
+                    [dict objectForKey:fromString],
+                    [path substringFromIndex:[fromString length]]];
+        }
+    }
+    return path;
+}
+
+- (NSString *) convertToAppRelativePath:(NSString *)path
+{
+    return [self convertPath:path withDict:[self getRelativeMap:YES]];
+}
+
+- (NSString *) convertFromAppRelativePath:(NSString *)path
+{
+    return [self convertPath:path withDict:[self getRelativeMap:NO]];
+}
+
 @end

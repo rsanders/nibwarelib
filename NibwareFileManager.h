@@ -17,5 +17,7 @@
 - (void) registerApplicationScopeFile:(NSString*)fileName;
 - (NSFileHandle *) createApplicationScopeTempFile;
 
+- (NSString *) convertToAppRelativePath:(NSString *)path;
+- (NSString *) convertFromAppRelativePath:(NSString *)path;
 
 @end
