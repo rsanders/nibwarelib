@@ -109,9 +109,7 @@ void NibwareFileManagerAtexit()
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
     
-    // ADD_MAP_ENTRY(@"%%DOCUMENTS%%", documentsDirectory);
     ADD_MAP_ENTRY(@"%%NSHOMEDIR%%", NSHomeDirectory());
     return dict;
 }
