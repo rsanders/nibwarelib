@@ -12,6 +12,7 @@
 @interface UIImage(Subimage)
 
 - (UIImage*)subImageInRect:(CGRect)rect;
-
+- (CGAffineTransform) transformForOrientation;
+- (UIImage*) imageWithoutOrientation;
 
 @end
