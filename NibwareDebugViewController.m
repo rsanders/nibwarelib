@@ -151,7 +151,7 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
     // return (interfaceOrientation == UIInterfaceOrientationPortrait);
-    NWLog(@"debug view asked about rotating");
+    NWLog(@"debug view asked about rotating", __PRETTY_FUNCTION__);
     return YES;
 }
 

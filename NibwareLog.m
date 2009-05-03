@@ -100,8 +100,10 @@ void NWLog(NSString *format, ...)
 {
     va_list ap;
 
+    NSString *format2 = [@"%s: " stringByAppendingString:format];
+    
     va_start(ap, format);
-    [[NibwareLog singleton] logWithFormat:format arguments:ap];
+    [[NibwareLog singleton] logWithFormat:format2 arguments:ap];
     va_end(ap);
 }
 

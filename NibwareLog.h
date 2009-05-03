@@ -35,5 +35,5 @@ void NullLog(NSString *format, ...);
 
 #ifndef LEAVE_NSLOG_ALONE
 #define OriginalNSLog  NSLog
-#define NSLog          NWLog
+#define NSLog(fmt, args...)      NWLog(fmt, __PRETTY_FUNCTION__, ##args)
 #endif
