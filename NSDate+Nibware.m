@@ -36,7 +36,6 @@
 {
     float diff = [reference timeIntervalSinceDate:self];
     float day_diff = floor(diff / 86400);
-    NSLog(@"PrettyDate: %f seconds diff, day_diff=%f", diff, day_diff);
 
     if (day_diff == 0) {
         if (diff < 60) return @"just now";
