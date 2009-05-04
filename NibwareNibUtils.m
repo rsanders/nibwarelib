@@ -28,7 +28,7 @@
                 newcell = nil; 
         } 
     } 
-    return newcell; 
+    return newcell;
 }
 
 + (UITableViewCell*) loadNewCellfromNib:(NSString *)nibName 
