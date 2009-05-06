@@ -8,6 +8,7 @@
 
 #import "NibwareURLShortener.h"
 
+#import "NibwareUrlUtils.h"
 
 @implementation NibwareURLShortener
 
@@ -24,7 +25,8 @@
 
 - (NSString*) shorten
 {
-    NSString *newURLString = [NSString stringWithFormat:@"http://is.gd/api.php?longurl=%@", longString];
+    NSString *newURLString = [NSString stringWithFormat:@"http://is.gd/api.php?longurl=%@", 
+                              [NibwareUrlUtils urlencode:longString]];
     NSURL *newURL = [NSURL URLWithString:newURLString];
     
     NSError *err = nil;
