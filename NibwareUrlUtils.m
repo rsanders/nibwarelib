@@ -21,7 +21,7 @@
                                                 CFSTR("?=&+\" "),  // legal URL chars to escape
                                                 kCFStringEncodingUTF8);
     
-    return newstring;
+    return [newstring autorelease];
 }
 
 +(NSString *) urldecode:(NSString *)string
