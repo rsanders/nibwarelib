@@ -95,7 +95,7 @@
         }
     }
     if (create) {
-        section = [[NibwareTableSection alloc] initWithSectionName:name];
+        section = [[[NibwareTableSection alloc] initWithSectionName:name] autorelease];
         [self.sections addObject:section];
     }
     return section;
