@@ -8,6 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+@interface NibwareUIImage : UIImage {
+    UIImageOrientation     forcedOrientation;
+    BOOL                   hasForcedOrientation;
+}
+
+@property (assign) UIImageOrientation     forcedOrientation;
+@property (assign) BOOL                   hasForcedOrientation;
+@end
+
 
 @interface UIImage(Subimage)
 

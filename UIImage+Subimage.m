@@ -8,6 +8,34 @@
 
 #import "UIImage+Subimage.h"
 
+@implementation NibwareUIImage
+
+@synthesize forcedOrientation, hasForcedOrientation;
+
+- (id) initWithCGImage:(CGImageRef)imageRef orientation:(UIImageOrientation)orientation
+{
+    self = [super initWithCGImage:imageRef];
+    self.forcedOrientation = orientation;
+    return self;
+}
+
+- (UIImageOrientation) imageOrientation 
+{
+    TRACEFUNC();
+    if (hasForcedOrientation) {
+        return forcedOrientation;
+    } else {
+        return [super imageOrientation];
+    }
+}
+
+- (void) setForcedOrientation:(UIImageOrientation)orientation 
+{
+    hasForcedOrientation = YES;
+    forcedOrientation = orientation;
+}
+
+@end
 
 @implementation UIImage(Subimage)
 
@@ -104,7 +132,7 @@
     NSLog(@"         resulting CG size = %d x %d", 
           (int)CGImageGetWidth(origCG), (int)CGImageGetHeight(origCG));
 
-    return [[[UIImage alloc] initWithCGImage:newCG] autorelease];
+    return [[[NibwareUIImage alloc] initWithCGImage:newCG orientation:[self imageOrientation]] autorelease];
 }
 
 - (UIImage*) imageWithoutOrientation
