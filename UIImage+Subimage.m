@@ -121,9 +121,13 @@
     NSLog(@"UIImage(Subimage): orientation is %d, CG size = %d x %d", 
           [self imageOrientation], (int)CGImageGetWidth(origCG), (int)CGImageGetHeight(origCG));
 
+    NSLog(@"         orig rect is %.0f,%.0f %.0f x %.0f",
+          rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+    
     CGAffineTransform xform = [self transformForOrientation];
+    xform = CGAffineTransformInvert(xform);
     rect = CGRectApplyAffineTransform(rect, xform);
-
+    
     NSLog(@"         new rect is %.0f,%.0f %.0f x %.0f",
           rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
     
