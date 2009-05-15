@@ -35,6 +35,24 @@
     forcedOrientation = orientation;
 }
 
+- (CGSize) size
+{
+    if (! hasForcedOrientation) {
+        return [super size];
+    }
+    
+    CGSize size = [super size];
+    switch (forcedOrientation) {
+        case UIImageOrientationLeft:
+        case UIImageOrientationLeftMirrored:
+        case UIImageOrientationRight:
+        case UIImageOrientationRightMirrored:
+            return CGSizeMake(size.height, size.width);
+        default:
+            return size;
+    }
+}
+
 @end
 
 @implementation UIImage(Subimage)
