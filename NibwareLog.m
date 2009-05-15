@@ -12,7 +12,7 @@
 
 @implementation NibwareLog
 
-@synthesize maxMessages, messages, doNotify;
+@synthesize maxMessages, messages, doNotify, doArchive;
 
 #pragma mark Overhead methods 
 
@@ -39,7 +39,8 @@
                    name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     
     self.messages = [[NSMutableArray alloc] init];
-    self.doNotify = YES;
+    self.doNotify = NO;
+    self.doArchive = NO;
     
     return self;
 }
@@ -63,9 +64,13 @@
 #pragma mark Useful Methods
 
 - (void) log:(NSString *)message {
-    @synchronized (messages)
-    {
-        [[self messages] addObject:message];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
+    if (doArchive) {
+        @synchronized (messages)
+        {
+            [[self messages] addObject:message];
+        }
     }
     NSLog(message);
     
@@ -74,9 +79,12 @@
         NSDictionary *userInfo = [NSDictionary dictionaryWithObject:message forKey:@"message"];
         [center postNotificationName:NIBWARE_NOTIFICATION_LOG  object:self userInfo:userInfo];
     }
+    
+    [pool release];
 }
 
 - (void) logWithFormat:(NSString *)format, ... {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     va_list ap;
     
     va_start(ap, format);
@@ -85,13 +93,18 @@
     
     [self log:result];
     [result release];
+    [pool release];
 }
 
 
 - (void) logWithFormat:(NSString *)format arguments:(va_list) arguments {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
     NSString *result = [[NSString alloc] initWithFormat:format arguments:arguments];
     [self log:result];
     [result release];
+    
+    [pool release];
 }
 
 @end

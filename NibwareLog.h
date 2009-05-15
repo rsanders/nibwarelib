@@ -14,6 +14,7 @@
     NSInteger maxMessages;
     
     BOOL doNotify;
+    BOOL doArchive;
 }
 
 + (NibwareLog *)singleton;
@@ -24,7 +25,7 @@
 
 @property (retain) NSMutableArray *messages;
 @property (assign) NSInteger maxMessages;
-@property (assign) BOOL doNotify;
+@property (assign) BOOL doNotify, doArchive;
 
 @end
 
