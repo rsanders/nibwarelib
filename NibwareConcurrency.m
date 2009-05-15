@@ -24,6 +24,8 @@
     object_ = [object retain];
     args_ = [args retain];
     
+    NSAssert([args_ count] < 2, @"NibwareNSOperation currently only handles 0 or 1 arguments");
+    
     return self;
 }
 
