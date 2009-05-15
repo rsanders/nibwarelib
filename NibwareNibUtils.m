@@ -22,7 +22,7 @@
     while ( (nibItem = [nibEnumerator nextObject]) != nil) { 
         if ( [nibItem isKindOfClass: [UITableViewCell class]]) { 
             newcell = (UITableViewCell*) nibItem; 
-            if ([newcell.reuseIdentifier isEqualToString: cellid]) 
+            if ([newcell.reuseIdentifier isEqual: cellid]) 
                 break; // we have a winner 
             else 
                 newcell = nil; 
