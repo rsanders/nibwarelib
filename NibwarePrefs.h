@@ -12,11 +12,15 @@
 @interface NibwarePrefs : NSObject {
 
 }
+
++ (void) copyUserdefaultsFrom:(NSDictionary*)dict overwrite:(BOOL)overwrite;
+
 @end
 
 @interface NSUserDefaults (Nibware)   
 
 - (void) setFromDictionary:(NSDictionary *)dict;
 - (void) setValueByParsedString:(NSString *)value forKey:(NSString *)key;
+- (void) copyFromDictionary:(NSDictionary*)dict overwrite:(BOOL)overwrite;
 
 @end

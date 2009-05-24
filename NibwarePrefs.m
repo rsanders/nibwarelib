@@ -11,6 +11,7 @@
 
 @implementation NibwarePrefs
 
+
 @end
 
 
@@ -26,7 +27,8 @@
         || [value isEqualToString:@"f"]
         || [value isEqualToString:@"Y"]
         || [value isEqualToString:@"N"]        
-        ) {
+        ) 
+    {
         NSLog(@"setting boolean to value %d", [value boolValue]);
         [self setBool:[value boolValue] forKey:key];
     }
@@ -35,12 +37,14 @@
     }
 }
 
-- (void) setFromDictionary:(NSDictionary *)dict
+- (void) setFromDictionary:(NSDictionary *)dict overwrite:(BOOL)overwrite
 {
     NSLog(@"NIBWARE: setting preferences from dict %@", dict);
     
-    NSString *key;
-    for (key in [dict keyEnumerator]) {
+    for (NSString *key in [dict keyEnumerator]) {
+        if (!overwrite && [self objectForKey:key]) {
+            continue;
+        }
         NSString *val = [dict valueForKey:key];
         
         NSLog(@"setting config for %@ to %@", key, val);
@@ -49,5 +53,21 @@
         [self setValueByParsedString:val forKey:key];
     }
 }
+
+- (void) setFromDictionary:(NSDictionary *)dict
+{
+    [self setFromDictionary:dict overwrite:YES];
+}
+
+- (void) copyFromDictionary:(NSDictionary*)dict overwrite:(BOOL)overwrite
+{
+    for (NSString *key in [dict keyEnumerator]) {
+        if (!overwrite && [self objectForKey:key]) {
+            continue;
+        }
+        [self setValue:[dict valueForKey:key] forKey:key];
+    }
+}
+
 
 @end
