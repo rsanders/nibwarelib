@@ -26,8 +26,9 @@
 @property (retain) NSMutableString            *destination;
 
 + (NSString *) linkifyString:(NSString *)source;
++ (NSString *) htmlifyString:(NSString *)source;
 
 - (NibwareHTMLifier*) initWithDelegate:(id<NibwareHTMLifierDelegate>)delegate;
 
-- (NSString *) htmlify:(NSString *)string;
+- (NSString *) linkify:(NSString *)string;
 @end

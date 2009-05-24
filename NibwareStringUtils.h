@@ -18,4 +18,7 @@
 + (NSString *) friendlyDataSize:(NSInteger)length decimalPlaces:(int)places;
 + (NSString *) friendlyDurationInSeconds:(NSInteger)seconds;
 
++ (NSString*) escapeForXML:(NSString *)string;
+
+
 @end

@@ -9,7 +9,7 @@
 #import <math.h>
 
 #import "NibwareHTMLifier.h"
-
+#import "NibwareStringUtils.h"
 #import "RegexKitLite.h"
 
 @interface NibwareHTMLTextLinkifier : NSObject <NibwareHTMLifierDelegate> {
@@ -36,9 +36,17 @@
 {
     NibwareHTMLifier *ify = [[NibwareHTMLifier alloc] initWithDelegate:
                                 [[[NibwareHTMLTextLinkifier alloc] init] autorelease]];
-    NSString *res = [[[ify htmlify:string] retain] autorelease];
+    NSString *res = [[[ify linkify:string] retain] autorelease];
     [ify release];
     return res;
+}
+
+
++ (NSString *) htmlifyString:(NSString*)string
+{
+    string = [self linkifyString:string];
+    return [NSString stringWithFormat:@"<html><head><meta id='viewport' name='viewport' content='width=device-width; user-scalable=0;'/></head><body><div width='100%' height='100%'>%@</div></body></html>", 
+                      [NibwareStringUtils escapeForXML:string]];
 }
 
 
@@ -57,6 +65,8 @@
     self.delegate = del;
     // self.urlRegex = @"\\b(http|https|ftp)://[A-Za-z0-9\\+\\&\\@\\#\\/\\%\\?\\=\\~\\_\\(\\)\\|\\!\\:\\,\\.\\;\\-]*[\\-A-Za-z0-9\\+\\&\\@\\#\\/\\%\\=\\~\\_\\|]";
     // self.urlRegex = @"\\b(http|https|ftp)://[^\\s]*[\\-A-Za-z0-9\\+\\&\\@\\#\\/\\%\\=\\~\\_\\|\\w\\X]";
+    
+    // this one does much better with Unicode URLs, like the ones at tinyarro.ws
     self.urlRegex = @"\\b(http|https|ftp)://[[:^space:]-[\\,\\;\\!\\$\\^\\*\\(\\)\\[\\]\\{\\}\\\\\\\"\\'\\<\\>\\`]]+[[:^space:]-[\\.\\,\\:\\;\\!\\$\\^\\*\\(\\)\\[\\]\\{\\}\\\\\\\"\\'\\?\\<\\>\\`]]";
 
     return self;
@@ -105,7 +115,7 @@
     return done;
 }
 
-- (NSString *) htmlify:(NSString *)string
+- (NSString *) linkify:(NSString *)string
 {
     [self startString:string];
     [self process:nil];

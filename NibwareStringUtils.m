@@ -73,6 +73,40 @@
     return [res autorelease];
 }
 
+#pragma mark XML escaping
+
++ (NSString*) escapeForXML:(NSString *)string
+{
+    NSMutableString *mut = [[NSMutableString alloc] initWithCapacity:string.length];
+
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    for (int i = 0; i < string.length; i++) {
+        unichar prochar = [string characterAtIndex:i];
+        NSString *replacement = nil;
+        switch (prochar) {
+            case '&':
+                replacement = @"&amp;";
+                break;
+            case '<':
+                replacement = @"&lt;";
+                break;
+            case '>':
+                replacement = @"&gt;";
+                break;
+        }
+        if (replacement) [mut appendString:replacement];
+        else {
+            [mut appendFormat:@"%C", prochar];
+        }
+        if (i % 50 == 0) [pool drain];
+    }
+    [pool release];
+
+    return [mut autorelease];
+}
+
+
+
 //////////////////////////////////////
 
 #if 0
