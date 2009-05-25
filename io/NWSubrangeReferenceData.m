@@ -214,6 +214,12 @@ static NSInteger counter;
     return [[NSMutableData dataWithData:(NSData*)self] retain];
 }
 
+- (NSData*) subDataNoCopy:(NSRange)range
+{
+    return [NWSubrangeReferenceData dataWithData:_refData 
+                                           range:NSMakeRange(_range.location + range.location, range.length)];
+}
+
 #pragma mark cleanup
 
 - (void) dealloc
