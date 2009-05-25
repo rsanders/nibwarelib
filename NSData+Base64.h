@@ -8,6 +8,7 @@
 // Original development by Dave Winer.
 //
 
+@protocol NibwareOutputStream;
 
 @interface NSData (Base64)
 
@@ -33,5 +34,7 @@
 - (NSString *) base64EncodingWithLineLength:(unsigned int) lineLength;
 
 - (NSInteger) base64EncodingWithLineLength:(unsigned int)lineLength toFileHandle:(NSFileHandle*)handle;
+
+- (NSInteger) base64EncodingWithLineLength:(unsigned int)lineLength toOutputStream:(id<NibwareOutputStream>)stream;
 
 @end
