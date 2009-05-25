@@ -7,7 +7,7 @@
 //
 
 #import "NibwareStringUtils.h"
-
+#import "NibwareIO.h"
 
 @implementation NibwareStringUtils
 
@@ -77,8 +77,9 @@
 
 + (NSString*) escapeForXML:(NSString *)string
 {
-    NSMutableString *mut = [[NSMutableString alloc] initWithCapacity:string.length];
+    NibwareDiskBackedBuffer *buf = [[NibwareDiskBackedBuffer alloc] initWithMaxSize:8192 capacity:string.length];
 
+    NSStringEncoding encoding = [string fastestEncoding];
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     for (int i = 0; i < string.length; i++) {
         unichar prochar = [string characterAtIndex:i];
@@ -94,15 +95,18 @@
                 replacement = @"&gt;";
                 break;
         }
-        if (replacement) [mut appendString:replacement];
-        else {
-            [mut appendFormat:@"%C", prochar];
+        if (replacement) {
+            [buf appendString:replacement encoding:encoding];
+        } else {
+            [buf appendString:[NSString stringWithFormat:@"%C", prochar] encoding:encoding];
         }
         if (i % 50 == 0) [pool drain];
     }
     [pool release];
 
-    return [mut autorelease];
+    NSString *res = [buf inputString:encoding];
+    [buf release];
+    return res;
 }
 
 

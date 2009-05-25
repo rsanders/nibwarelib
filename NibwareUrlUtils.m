@@ -9,6 +9,7 @@
 #import "NibwareUrlUtils.h"
 #import "NibwareFileManager.h"
 #import "NibwareMIMEPart.h"
+#import "NibwareIO.h"
 
 @implementation NibwareUrlUtils
 
@@ -51,32 +52,22 @@
 
 + (NSData*) dictToQueryData:(NSDictionary *)dict
 {
-    NSString *path = [[NibwareFileManager singleton] makeTempFileName];
-    [[NibwareFileManager singleton] registerApplicationScopeFile:path];
+    NibwareDiskBackedBuffer *buf = [[NibwareDiskBackedBuffer alloc] initWithMaxSize:16384 capacity:256];
     
-    NSInteger size = [self dictToQueryFile:dict path:path];
-    if (size == -1)
-        return nil;
+    [self dictToQuery:dict outputStream:buf];
+    
+    NSData *ret = [buf inputData];
+    [buf release];
 
-    NSUInteger options = NSMappedRead;
-    NSError *error = nil;
-    NSData *data = [NSData dataWithContentsOfFile:path options:options error:&error];
-    if (! data || error) {
-        NSLog(@"could not map file %@: %@", path, error);
-    }
-
-    return data;
+    return ret;
 }
 
 + (NSInteger) dictToQueryFile:(NSDictionary *)dict path:(NSString*)path {
-    NSEnumerator *enumerator = [dict keyEnumerator];
-    id key;
-
     if (![[NSFileManager defaultManager] createFileAtPath:path
                                             contents:[NSData data]
                                                attributes:nil])
     {
-        NSLog(@"could not create temp file");
+        NSLog(@"could not create file at %@", path);
         return -1;
     }
 
@@ -86,35 +77,65 @@
         return -1;
     }
     [file truncateFileAtOffset:0];
-    
-    NSString *sep = @"";
-    while ((key = [enumerator nextObject])) {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        NSString *escapedKey = [self urlencode:key];
-        [file writeData:[[NSString stringWithFormat:@"%@%@=", 
-                          sep, escapedKey] dataUsingEncoding:NSUTF8StringEncoding]];
-        
-        id value = [dict valueForKey:key];
-        if ([value isKindOfClass:[NSData class]]) {
-            [file writeData:(NSData *)value];
-        } else if ([value isKindOfClass:[NSString class]]) {
-            NSString *escapedValue = [self urlencode:(NSString *)value];
-            [file writeData:[escapedValue dataUsingEncoding:NSUTF8StringEncoding]];
-        } else {
-            [file writeData:[@"unknown" dataUsingEncoding:NSUTF8StringEncoding]];
-        }
-        
-        [pool release];
-        sep = @"&";
-    }
 
+    NibwareFileOutputStream *output = [[NibwareFileOutputStream alloc] initWithFile:file];
+
+    NSInteger size = [self dictToQuery:dict outputStream:output];
+
+    [output close];
+    [output release];
     [file closeFile];
     [file release];
 
-    NSDictionary *att = [[NSFileManager defaultManager] fileAttributesAtPath:path traverseLink:YES];
-    NSNumber *size = [att objectForKey:NSFileSize];
-    return size ? [size unsignedLongLongValue] : -1;
+    return size;
 }
+
++ (NSInteger) dictToQuery:(NSDictionary *)dict outputStream:(id<NibwareOutputStream>)output {
+    NSEnumerator *enumerator = [dict keyEnumerator];
+    id key;
+       
+    NSString *sep = @"";
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    while ((key = [enumerator nextObject])) {
+        NSString *escapedKey = [self urlencode:key];
+        [output appendData:[[NSString stringWithFormat:@"%@%@=", 
+                             sep, escapedKey] dataUsingEncoding:NSUTF8StringEncoding]];
+
+        id<NSObject> value = [dict valueForKey:key];
+        
+        // first boil some common types down to their string equivalent
+        // arrays and sets can only contain strings or other object that responds to description
+        if ([value isKindOfClass:[NSNumber class]]) {
+            value = [(NSNumber*)value stringValue];
+        } else if ([value isKindOfClass:[NSURL class]]) {
+            value = [(NSURL*)value absoluteString];
+        } else if ([value isKindOfClass:[NSArray class]]) {
+            value = [self urlencode:[(NSArray*)value componentsJoinedByString:@","]];
+        } else if ([value isKindOfClass:[NSSet class]]) {
+            value = [self urlencode:[[(NSSet*)value allObjects] componentsJoinedByString:@","]];
+        } 
+        
+        // now spit 'em out
+        if ([value isKindOfClass:[NSString class]]) {
+            NSString *escapedValue = [self urlencode:(NSString *)value];
+            [output appendData:[escapedValue dataUsingEncoding:NSUTF8StringEncoding]];
+        } else if ([value isKindOfClass:[NSData class]]) {
+            [output appendData:(NSData *)value];
+        } else if ([value respondsToSelector:@selector(description)]) {
+            NSString *escapedValue = [self urlencode:[value description]];
+            [output appendData:[escapedValue dataUsingEncoding:NSUTF8StringEncoding]];
+        } else {
+            [output appendData:[@"unknownValueType" dataUsingEncoding:NSUTF8StringEncoding]];
+        }
+        
+        [pool drain];
+        sep = @"&";
+    }
+    [pool release];
+    
+    return [output size];
+}
+
 
 + (NSString *) dictToQueryString:(NSDictionary *)dict {
     return [[NSString alloc] initWithData:[NibwareUrlUtils dictToQueryData:dict]
@@ -138,7 +159,8 @@
 	 now lets create the body of the post
      */
     NSStringEncoding encoding = NSUTF8StringEncoding;
-	NSMutableData *body = [[NSMutableData data] retain];
+	// NSMutableData *body = [[NSMutableData data] retain];
+    NibwareDiskBackedBuffer *buf = [[NibwareDiskBackedBuffer alloc] initWithMaxSize:16384 capacity:256];
     
     for (int i = 0; i < [parts count]; i++) {
         NibwareMIMEPart *part = (NibwareMIMEPart *)[parts objectAtIndex:i];
@@ -149,23 +171,23 @@
             mimeType = @"application/octet-stream";
         }
         
-        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] 
+        [buf appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] 
                          dataUsingEncoding:encoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", name, filename] 
+        [buf appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", name, filename] 
                           dataUsingEncoding:encoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n", mimeType]
+        [buf appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n", mimeType]
                           dataUsingEncoding:encoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Length: %d\r\n", [[part body] length]]
+        [buf appendData:[[NSString stringWithFormat:@"Content-Length: %d\r\n", [[part body] length]]
                           dataUsingEncoding:encoding]];
-        [body appendData:[@"\r\n" dataUsingEncoding:encoding]];
+        [buf appendData:[@"\r\n" dataUsingEncoding:encoding]];
 
-        [body appendData:part.body];
+        [buf appendData:part.body];
     }
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] 
+    [buf appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] 
                       dataUsingEncoding:encoding]];
 
-	[request setHTTPBody:body];
-    [body release];
+	[request setHTTPBody:[buf inputData]];
+    [buf release];
 }
 
 @end

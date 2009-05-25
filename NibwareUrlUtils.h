@@ -6,6 +6,7 @@
 //  Copyright 2008 ViTrue, Inc.. All rights reserved.
 //
 
+@protocol NibwareOutputStream;
 
 @interface NibwareUrlUtils : NSObject {
 
@@ -17,6 +18,10 @@
 + (NSString *) urldecode:(NSString *)string;
 
 + (NSDictionary *) parseQueryString:(NSString *)queryString;
+
+
++ (NSInteger) dictToQuery:(NSDictionary *)dict outputStream:(id<NibwareOutputStream>)output;
+
 + (NSString *) dictToQueryString:(NSDictionary *)dict;
 + (NSData *) dictToQueryData:(NSDictionary *)dict;
 + (NSInteger) dictToQueryFile:(NSDictionary *)dict path:(NSString *)name;
