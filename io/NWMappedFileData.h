@@ -9,18 +9,25 @@
 #import <Foundation/Foundation.h>
 
 
+@class NWTempFileHandle;
+
 @interface NWMappedFileData : NSProxy {
     NSData*               _realData;
     NSString*             _path;
+    NWTempFileHandle*     _tempHandle;
     BOOL                  _deleteWhenDone;
 }
 
-@property (retain) NSString*             path;
-@property (assign) BOOL                  deleteWhenDone;
+@property (readonly) NSString*             path;
+@property (readonly) BOOL                  deleteWhenDone;
+@property (readonly) NWTempFileHandle*     tempHandle;
 
-+ (NWMappedFileData*) dataWithPath:(NSString*)path deleteWhenDone:(BOOL)dod;
++ (NSData*) dataWithPath:(NSString*)path deleteWhenDone:(BOOL)dod;
++ (NSData*) dataWithPath:(NSString*)path range:(NSRange)range deleteWhenDone:(BOOL)dod;
++ (NSData*) dataWithTempFileHandle:(NWTempFileHandle*)handle;
++ (NSData*) dataWithTempFileHandle:(NWTempFileHandle*)handle range:(NSRange)range;
 
 - (id) initWithPath:(NSString*)path deleteWhenDone:(BOOL)dod;
-
+- (id) initWithTempFileHandle:(NWTempFileHandle*)handle;
 
 @end

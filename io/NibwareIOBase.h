@@ -13,3 +13,16 @@
 @end
 
 
+@interface NWTempFileHandle : NSObject {
+    NSString*         _path;
+    BOOL              _deleteWhenDone;
+}
+@property (readonly) NSString*         path;
+@property (readonly) BOOL              deleteWhenDone;
+
++ (NWTempFileHandle*) handleWithPath:(NSString*)path deleteWhenDone:(BOOL)dod;
++ (NWTempFileHandle*) handleWithPath:(NSString*)path;
+
+- (id) initWithPath:(NSString*)path deleteWhenDone:(BOOL)dod;
+
+@end

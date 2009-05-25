@@ -89,9 +89,6 @@
 
 // more methods mainly intended to mollify NSMutableData users
 
-#pragma mark NSMutableData-like methods
-
-// plain old NSData like methods
 - (NSUInteger) length {
     return [_output length];
 }
