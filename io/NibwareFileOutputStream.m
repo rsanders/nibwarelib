@@ -6,9 +6,11 @@
 //  Copyright 2009 Robert Sanders. All rights reserved.
 //
 
-#import "NibwareFileOutputStream.h"
 #include <sys/stat.h>
 #include <sys/unistd.h>
+
+#import "NibwareFileOutputStream.h"
+#import "NSFileHandle+MutableData.h"
 
 @implementation NibwareFileOutputStream
 
@@ -49,46 +51,66 @@
     [_file synchronizeFile];
 }
 
-#pragma mark NSMutableData-like methods
 
-- (void)setLength:(NSUInteger)newLength {
-    [_file truncateFileAtOffset:newLength];
+#pragma mark NSMutableData like methods
+
+// more methods mainly intended to mollify NSMutableData users
+- (void)increaseLengthBy:(NSUInteger)extraLength
+{
+    [_file increaseLengthBy:extraLength];
 }
 
-- (void)increaseLengthBy:(NSUInteger)extraLength {
-//    NSUInteger blockLength = fmax(extraLength, 4096);
-//    unsigned char *zeroes = malloc(blockLength);
-//    NSData *data = [NSData dataWithBytesNoCopy:zeroes length:blockLength];
-//
-//    while (extraLength >= blockLength) {
-//        [_file writeData:zeroData];
-//        extraLength -= blockLength;
-//    }
-//
-//    if (extraLength) {
-//        [_file writeData:[NSData dataWithBytesNoCopy:zeroes length:extraLength]];
-//    }
-    
-    [self setLength:[self size] + extraLength];
+- (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)bytes
+{
+    [_file replaceBytesInRange:range withBytes:bytes];
 }
 
-- (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)bytes {
-    // [_data replaceBytesInRange:range withBytes:bytes];
+- (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)replacementBytes length:(NSUInteger)replacementLength
+{
+    [_file replaceBytesInRange:range withBytes:replacementBytes length:replacementLength];
 }
 
-- (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)replacementBytes length:(NSUInteger)replacementLength {
-    // [_data replaceBytesInRange:range withBytes:replacementBytes length:replacementLength];
+- (void)resetBytesInRange:(NSRange)range
+{
+    [_file resetBytesInRange:range];
 }
 
-- (void)resetBytesInRange:(NSRange)range {
-    // [_data resetBytesInRange:range];
+- (void)setData:(NSData *)aData
+{
+    [_file setData:aData];
 }
 
-- (void)setData:(NSData *)aData {
-    [_file truncateFileAtOffset:0];
-    [self appendData:aData];
+- (void)setLength:(NSUInteger)length
+{
+    [_file setLength:length];
 }
 
+#pragma mark NSData like methods
+
+- (NSUInteger) length
+{
+    return [_file length];
+}
+
+- (NSData *)subdataWithRange:(NSRange)range
+{
+    return [_file subdataWithRange:range];
+}
+
+- (void)getBytes:(void *)buffer
+{
+    [_file getBytes:buffer];
+}
+
+- (void)getBytes:(void *)buffer length:(NSUInteger)length
+{
+    [_file getBytes:buffer length:length];
+}
+
+- (void)getBytes:(void *)buffer range:(NSRange)range
+{
+    [_file getBytes:buffer range:range];
+}
 
 
 #pragma mark Cleanup

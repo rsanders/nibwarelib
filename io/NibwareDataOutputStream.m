@@ -16,8 +16,13 @@
 - (id) initWithData:(NSMutableData*)data
 {
     self = [super init];
-    self.data = data;
+    _data = [data retain];
     return self;
+}
+
+- (id) init
+{
+    return [self initWithData:[NSMutableData data]];
 }
 
 #pragma mark Protocol methods
@@ -57,6 +62,34 @@
 - (void)setLength:(NSUInteger)length {
     [_data setLength:length];
 }
+
+#pragma mark NSData like methods
+
+- (NSUInteger) length
+{
+    return [_data length];
+}
+
+- (NSData *)subdataWithRange:(NSRange)range
+{
+    return [_data subdataWithRange:range];
+}
+
+- (void)getBytes:(void *)buffer
+{
+    [_data getBytes:buffer];
+}
+
+- (void)getBytes:(void *)buffer length:(NSUInteger)length
+{
+    [_data getBytes:buffer length:length];
+}
+
+- (void)getBytes:(void *)buffer range:(NSRange)range
+{
+    [_data getBytes:buffer range:range];
+}
+
 
 #pragma mark Cleanup
 

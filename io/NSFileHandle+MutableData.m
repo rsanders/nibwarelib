@@ -38,13 +38,6 @@
     [self appendData:[NSKeyedArchiver archivedDataWithRootObject:object]];
 }
 
-- (NSUInteger) size
-{
-    unsigned long long cur = [self offsetInFile];
-    NSInteger res = [self seekToEndOfFile];
-    [self seekToFileOffset:cur];
-    return res;
-}
 
 - (void *)mutableBytes
 {
@@ -90,9 +83,10 @@
 }
 
 - (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)bytes {
+    unsigned long long cur = [self offsetInFile];
     [self seekToFileOffset:range.location];
     [self writeData:[NSData dataWithBytesNoCopy:(void*)bytes length:range.length]];
-    [self seekToEndOfFile];
+    [self seekToFileOffset:cur];
 }
 
 - (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)replacementBytes length:(NSUInteger)replacementLength {
@@ -100,7 +94,7 @@
         [self replaceBytesInRange:range withBytes:replacementBytes];
         return;
     }
-    
+    unsigned long long cur = [self offsetInFile];
     NibwareDiskBackedBuffer *buf = [[NibwareDiskBackedBuffer alloc] initWithMaxSize:32768 capacity:4096];
 
     NSInteger mySize = [self size];
@@ -111,9 +105,13 @@
     [self appendBytes:replacementBytes length:replacementLength];
     [self appendData:[buf inputData]];
     [buf release];
+    
+    // don't try to go past new EOF
+    [self seekToFileOffset:fmin(cur, mySize - range.length + replacementLength)];
 }
 
 - (void)resetBytesInRange:(NSRange)range {
+    unsigned long long cur = [self offsetInFile];
     [self seekToFileOffset:range.location];
 
     NSUInteger resetLength = range.length;
@@ -132,12 +130,58 @@
     }
     [data release];
     
-    [self seekToEndOfFile];
+    [self seekToFileOffset:cur];
 }
 
 - (void)setData:(NSData *)aData {
     [self truncateFileAtOffset:0];
     [self appendData:aData];
+}
+
+#pragma mark Plain NSData methods
+
+- (NSUInteger) size
+{
+    unsigned long long cur = [self offsetInFile];
+    NSInteger res = [self seekToEndOfFile];
+    [self seekToFileOffset:cur];
+    return res;
+}
+
+- (NSUInteger) length
+{
+    return [self size];
+}
+
+- (NSData *)subdataWithRange:(NSRange)range
+{
+    NibwareDiskBackedBuffer *buf = [[NibwareDiskBackedBuffer alloc] initWithMaxSize:16384 capacity:fmin(256, range.length)];
+    [self copyRange:range toOutputStream:buf];
+    NSData *data = [buf inputData];
+    [buf release];
+    return data;
+}
+
+- (void)getBytes:(void *)buffer
+{
+    [self getBytes:buffer range:NSMakeRange(0, [self length])];
+}
+
+- (void)getBytes:(void *)buffer length:(NSUInteger)length
+{
+    [self getBytes:buffer range:NSMakeRange(0, length)];
+}
+
+- (void)getBytes:(void *)buffer range:(NSRange)range
+{
+    [self synchronizeFile];
+    pread([self fileDescriptor], buffer, range.length, range.location);
+}
+
+- (const void *)bytes
+{
+    [NibwareIOException raise:@"Unimplemented" format:@"%@ not implemented", NSStringFromSelector(_cmd)];
+    return NULL;
 }
 
 @end

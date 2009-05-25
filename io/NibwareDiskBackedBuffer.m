@@ -31,10 +31,10 @@
 {
     if (_path || ! [_output isKindOfClass:[NibwareDataOutputStream class]]) return;
 
-    NSString *path = [[NibwareFileManager singleton] makeTempFileName];
-    [[(NibwareDataOutputStream*)_output data] writeToFile:path atomically:NO];
+    _path = [[[NibwareFileManager singleton] makeTempFileName] retain];
+    [[(NibwareDataOutputStream*)_output data] writeToFile:_path atomically:NO];
     
-    NSFileHandle *fh = [NSFileHandle fileHandleForUpdatingAtPath:path];
+    NSFileHandle *fh = [NSFileHandle fileHandleForUpdatingAtPath:_path];
     [fh seekToEndOfFile];
     [_output close];
     [_output release];
@@ -85,31 +85,63 @@
     [_output close];
 }
 
+#pragma mark NSData-like methods
+
+// more methods mainly intended to mollify NSMutableData users
 
 #pragma mark NSMutableData-like methods
 
-- (void)increaseLengthBy:(NSUInteger)extraLength {
-    // [_data increaseLengthBy:extraLength];
+// plain old NSData like methods
+- (NSUInteger) length {
+    return [_output length];
 }
 
-- (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)bytes {
-    // [_data replaceBytesInRange:range withBytes:bytes];
+- (NSData *)subdataWithRange:(NSRange)range {
+    return [_output subdataWithRange:range];
 }
 
-- (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)replacementBytes length:(NSUInteger)replacementLength {
-    // [_data replaceBytesInRange:range withBytes:replacementBytes length:replacementLength];
+- (void)getBytes:(void *)buffer {
+    [_output getBytes:buffer];
 }
 
-- (void)resetBytesInRange:(NSRange)range {
-    // [_data resetBytesInRange:range];
+- (void)getBytes:(void *)buffer length:(NSUInteger)length {
+    [_output getBytes:buffer length:length];
 }
 
-- (void)setData:(NSData *)aData {
-    // [_data setData:aData];
+- (void)getBytes:(void *)buffer range:(NSRange)range {
+    [_output getBytes:buffer range:range];
 }
 
-- (void)setLength:(NSUInteger)length {
-    // [_data setLength:length];
+#pragma mark NSMutableData-like methods
+
+- (void)increaseLengthBy:(NSUInteger)extraLength
+{
+    [_output increaseLengthBy:extraLength];
+}
+
+- (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)bytes
+{
+    [_output replaceBytesInRange:range withBytes:bytes];
+}
+
+- (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)replacementBytes length:(NSUInteger)replacementLength
+{
+    [_output replaceBytesInRange:range withBytes:replacementBytes length:replacementLength];
+}
+
+- (void)resetBytesInRange:(NSRange)range
+{
+    [_output resetBytesInRange:range];
+}
+
+- (void)setData:(NSData *)aData
+{
+    [_output setData:aData];
+}
+
+- (void)setLength:(NSUInteger)length
+{
+    [_output setLength:length];
 }
 
 

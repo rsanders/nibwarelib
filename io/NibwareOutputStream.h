@@ -33,7 +33,15 @@
 - (void)setData:(NSData *)aData;
 - (void)setLength:(NSUInteger)length;
 
+// plain old NSData like methods
+- (NSUInteger) length;
+- (NSData *)subdataWithRange:(NSRange)range;
+- (void)getBytes:(void *)buffer;
+- (void)getBytes:(void *)buffer length:(NSUInteger)length;
+- (void)getBytes:(void *)buffer range:(NSRange)range;
+
 @end
+
 
 @interface NibwareBaseOutputStream : NSObject {
 }

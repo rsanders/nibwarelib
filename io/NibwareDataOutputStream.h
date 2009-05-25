@@ -14,7 +14,7 @@
     NSMutableData             *_data;
 }
 
-@property (retain) NSMutableData             *data;
+@property (readonly) NSMutableData             *data;
 
 - (id) initWithData:(NSMutableData*)data;
 
