@@ -19,7 +19,7 @@
         CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, 
                                                 (CFStringRef) string, 
                                                 NULL,       // those to leave unescaped
-                                                CFSTR("?=&+\" "),  // legal URL chars to escape
+                                                CFSTR(":/?=&+\" "),  // legal URL chars to escape
                                                 kCFStringEncodingUTF8);
     
     return [newstring autorelease];
