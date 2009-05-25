@@ -11,10 +11,12 @@
 #import "NWMappedFileData.h"
 
 @interface NWMappedFileString : NSString {
-    NWMappedFileData*     _mappedData;
+    NSData*               _mappedData;
+    NSStringEncoding      _mappedEncoding;
+    int                   _mappedWidth;
 }
 
-@property (readonly) NWMappedFileData*   mappedData;
+@property (readonly) NSData*   mappedData;
 
 + (NWMappedFileString*) stringWithData:(NSData*)data encoding:(NSStringEncoding)encoding;
 

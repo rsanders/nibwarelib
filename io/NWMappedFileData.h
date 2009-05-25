@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 
 
-@interface NWMappedFileData : NSData {
+@interface NWMappedFileData : NSProxy {
+    NSData*               _realData;
     NSString*             _path;
     BOOL                  _deleteWhenDone;
 }
