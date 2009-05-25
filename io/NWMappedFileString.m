@@ -10,6 +10,8 @@
 #import "NWMappedFileString.h"
 #import "NibwareIOBase.h"
 
+#define MIN_MAPPED_STRING_SIZE  16383
+
 @implementation NWMappedFileString
 
 @synthesize mappedData = _mappedData;
@@ -57,7 +59,7 @@
 
 - (id) initWithData:(NSData*)data encoding:(NSStringEncoding)encoding
 {
-    if (! [[self class] isEncodingSupported:encoding] || [data length] < 32768) {
+    if (! [[self class] isEncodingSupported:encoding] || [data length] < MIN_MAPPED_STRING_SIZE) {
         return [self replaceWithNormalString:data encoding:encoding];
     }
     
