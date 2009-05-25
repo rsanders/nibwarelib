@@ -107,7 +107,7 @@ static char encodingTable[64] = {
     
     [self base64EncodingWithLineLength:lineLength toOutputStream:buf];
     
-	NSString *res = [buf inputString:NSUTF8StringEncoding];
+	NSString *res = [buf inputString:NSASCIIStringEncoding];
     [buf release];
     return res;
 }
