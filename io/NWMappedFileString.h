@@ -10,13 +10,18 @@
 
 #import "NWMappedFileData.h"
 
+#define NWMappedFileString_MaxWidth 4
+
 @interface NWMappedFileString : NSString {
     NSData*               _mappedData;
     NSStringEncoding      _mappedEncoding;
     int                   _mappedWidth;
+    char                  _transform[NWMappedFileString_MaxWidth];
 }
 
 @property (readonly) NSData*   mappedData;
+
++ (BOOL) isEncodingSupported:(NSStringEncoding)encoding;
 
 + (NWMappedFileString*) stringWithData:(NSData*)data encoding:(NSStringEncoding)encoding;
 
