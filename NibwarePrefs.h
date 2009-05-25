@@ -13,7 +13,6 @@
 
 }
 
-+ (void) copyUserdefaultsFrom:(NSDictionary*)dict overwrite:(BOOL)overwrite;
 
 @end
 
