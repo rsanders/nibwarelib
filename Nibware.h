@@ -6,7 +6,7 @@
 //  Copyright 2008 ViTrue, Inc.. All rights reserved.
 //
 
-
+#import "NibwareBase.h"
 #import "NibwareMIMEPart.h"
 #import "NibwareUrlUtils.h"
 #import "NibwareStringUtils.h"

@@ -28,10 +28,25 @@
 
 - (void) close;
 
+// NSInputStream methods
+
+- (BOOL)getBuffer:(uint8_t **)buffer length:(NSUInteger *)len;
+- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len;
+- (BOOL)hasBytesAvailable;
+
+// NSFileHandle methods
+
+- (NSData *)availableData;
+- (NSData *)readDataOfLength:(NSUInteger)length;
+- (NSData *)readDataToEndOfFile;
+- (unsigned long long)seekToEndOfFile;
+- (void)seekToFileOffset:(unsigned long long)offset;
+
 @end
 
 
 @interface NibwareBaseInputStream : NSObject {
+    NSMutableData*          _buffer;
 }
 
 - (NSUInteger) readBytes:(const void*)bytes length:(NSUInteger)length;
@@ -44,5 +59,18 @@
 - (NSInteger) remainingBytes;
 
 - (void) close;
+
+// NSInputStream methods
+
+- (BOOL)getBuffer:(uint8_t **)buffer length:(NSUInteger *)len;
+- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len;
+- (BOOL)hasBytesAvailable;
+
+// NSFilehandle methods
+
+- (NSData *)availableData;
+- (NSData *)readDataOfLength:(NSUInteger)length;
+- (NSData *)readDataToEndOfFile;
+
 
 @end

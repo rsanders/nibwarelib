@@ -60,6 +60,40 @@
 {
 }
 
+#pragma mark NSInputStream
+
+- (BOOL)hasBytesAvailable
+{
+    return [self remainingBytes] > 0;
+}
+
+#pragma mark NSFileHandle
+
+- (NSData *)availableData
+{
+    return [_file availableData];
+}
+
+- (NSData *)readDataOfLength:(NSUInteger)length
+{
+    return [_file readDataOfLength:length];
+}
+
+- (NSData *)readDataToEndOfFile
+{
+    return [_file readDataToEndOfFile];
+}
+
+- (unsigned long long)seekToEndOfFile
+{
+    return [_file seekToEndOfFile];
+}
+
+- (void)seekToFileOffset:(unsigned long long)offset
+{
+    [_file seekToFileOffset:offset];
+}
+
 #pragma mark Cleanup
 
 - (void) dealloc

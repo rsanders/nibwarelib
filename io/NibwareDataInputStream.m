@@ -29,6 +29,8 @@
         [NibwareInputStreamException raise:@"InputStreamEOF" format:@"No more data to read"];
     }
 
+    length = fmin(length, [self remainingBytes]);
+
     NSData *data = [_data subdataWithRange:NSMakeRange(pointer, length)];
     pointer += [data length];
     return data;
@@ -42,6 +44,30 @@
 - (NSInteger) remainingBytes
 {
     return fmax([_data length]-pointer, 0);
+}
+
+#pragma mark NSInputStream
+
+- (BOOL)hasBytesAvailable
+{
+    return [self remainingBytes] > 0;
+}
+
+#pragma mark NSFileHandle
+
+
+- (unsigned long long)seekToEndOfFile
+{
+    pointer = [_data length];
+    return pointer;
+}
+
+- (void)seekToFileOffset:(unsigned long long)offset
+{
+    if (offset > [_data length]) {
+        [NibwareIOException raise:@"SeekError" format:@"Offset %d is past end of data (%d)", offset, _data.length];
+    }
+    pointer = offset;
 }
 
 #pragma mark Cleanup
