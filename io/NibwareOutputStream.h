@@ -40,6 +40,10 @@
 - (void)getBytes:(void *)buffer length:(NSUInteger)length;
 - (void)getBytes:(void *)buffer range:(NSRange)range;
 
+// NSOutputStream-like methods
+- (NSInteger)write:(const uint8_t *)buffer maxLength:(NSUInteger)length;
+- (BOOL) hasSpaceAvailable;
+
 @end
 
 

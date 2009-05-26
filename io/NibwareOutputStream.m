@@ -42,5 +42,15 @@
 {
 }
 
+- (NSInteger)write:(const uint8_t *)buffer maxLength:(NSUInteger)length
+{
+    [self appendBytes:buffer length:length];
+    return length;
+}
+
+- (BOOL) hasSpaceAvailable 
+{
+    return YES;
+}
 
 @end
